@@ -1,25 +1,35 @@
-import React from "react";
+import React from 'react';
 
 import {
   StyleSheet,
   View,
   Text,
   Dimensions,
-  TouchableOpacity
-} from "react-native";
-import Colors from "../../../constants/Colors";
+  TouchableOpacity,
+} from 'react-native';
+import Colors from '../../../constants/Colors';
 
-const HEIGHT = Dimensions.get("window").height;
+const HEIGHT = Dimensions.get('window').height;
 
-export default function ButtonDefault({ title, handleSend }) {
+export default function ButtonDefault({
+  title,
+  handleSend,
+  buttonOulined = false,
+}) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         activeOpacity={0.8}
-        style={styles.buttonContain}
-        onPress={() => handleSend()}
-      >
-        <Text style={{ color: Colors.white, fontSize: 20 }}>{title}</Text>
+        style={buttonOulined ? styles.buttonOulined : styles.buttonContain}
+        onPress={() => handleSend()}>
+        <Text
+          style={{
+            color: buttonOulined ? Colors.BLACK : Colors.white,
+            fontSize: 16,
+            fontWeight: '700',
+          }}>
+          {title}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -27,15 +37,25 @@ export default function ButtonDefault({ title, handleSend }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 20,
-    paddingRight: 20
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  buttonOulined: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    height: HEIGHT * 0.076,
+    borderRadius: 10,
+    paddingBottom: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonContain: {
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.green,
     height: HEIGHT * 0.076,
-    borderRadius: 25,
+    borderRadius: 10,
     paddingBottom: 2,
-    alignItems: "center",
-    justifyContent: "center"
-  }
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

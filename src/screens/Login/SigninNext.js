@@ -1,109 +1,108 @@
 // @ts-nocheck
-import React, { useState } from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
-import { Input, ListItem, Avatar } from "react-native-elements";
-import Colors from "../../../constants/Colors";
-import ButtonDefault from "../../components/Button/ButtonDefault";
-import { ScrollView } from "react-native-gesture-handler";
-import arrow_down from "../../assets/icons/arrow_down.png";
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
+import {Input, ListItem, Avatar} from 'react-native-elements';
+import Colors from '../../../constants/Colors';
+import ButtonDefault from '../../components/Button/ButtonDefault';
+import {ScrollView} from 'react-native-gesture-handler';
+import arrow_down from '../../assets/icons/arrow_down.png';
 
-export default function SigninNext({ navigation }) {
-  const [open, setOpen] = useState(false);
+export default function SigninNext({navigation}) {
   const [selectedVelo, setSelectedVelo] = useState(false);
   const [selectedFreins, setSelectedFreins] = useState(false);
   const [selectedAir, setSelectedAir] = useState(false);
   const [selectedRoues, setSelectedRoues] = useState(false);
 
   const [select, setSelect] = useState({
-    userName: "",
-    name: "",
-    firstName: "",
-    velo: "",
-    freins: "",
-    air: "",
-    roues: ""
+    userName: '',
+    name: '',
+    firstName: '',
+    velo: '',
+    freins: '',
+    air: '',
+    roues: '',
   });
 
   const onSubmit = () => {
-    console.log("Submit");
-    return navigation.navigate("Maps");
+    console.log('Submit');
+    return navigation.navigate('Maps');
   };
 
   const listFreins = [
-    { name: "Football", subtitle: "football" },
-    { name: "Baseball", subtitle: "baseball" },
-    { name: "Hockey", subtitle: "hockey" }
+    {name: 'Football', subtitle: 'football'},
+    {name: 'Baseball', subtitle: 'baseball'},
+    {name: 'Hockey', subtitle: 'hockey'},
   ];
   const list = [
     {
-      name: "Type de vélo",
-      subtitle: "Sélectionner",
+      name: 'Type de vélo',
+      subtitle: 'Sélectionner',
       choice: [
-        { label: "Football", value: "football" },
-        { label: "Baseball", value: "baseball" },
-        { label: "Hockey", value: "hockey" }
-      ]
+        {label: 'Football', value: 'football'},
+        {label: 'Baseball', value: 'baseball'},
+        {label: 'Hockey', value: 'hockey'},
+      ],
     },
     {
-      name: "Type de freins",
-      subtitle: "Sélectionner",
+      name: 'Type de freins',
+      subtitle: 'Sélectionner',
       choice: [
-        { label: "Football", value: "football" },
-        { label: "Baseball", value: "baseball" },
-        { label: "Hockey", value: "hockey" }
-      ]
+        {label: 'Football', value: 'football'},
+        {label: 'Baseball', value: 'baseball'},
+        {label: 'Hockey', value: 'hockey'},
+      ],
     },
     {
-      name: "Taille de chambre à air",
-      subtitle: "Sélectionner",
+      name: 'Taille de chambre à air',
+      subtitle: 'Sélectionner',
       choice: [
-        { label: "Football", value: "football" },
-        { label: "Baseball", value: "baseball" },
-        { label: "Hockey", value: "hockey" }
-      ]
+        {label: 'Football', value: 'football'},
+        {label: 'Baseball', value: 'baseball'},
+        {label: 'Hockey', value: 'hockey'},
+      ],
     },
     {
-      name: "Type de roues",
-      subtitle: "Sélectionner",
+      name: 'Type de roues',
+      subtitle: 'Sélectionner',
       choice: [
-        { label: "Football", value: "football" },
-        { label: "Baseball", value: "baseball" },
-        { label: "Hockey", value: "hockey" }
-      ]
-    }
+        {label: 'Football', value: 'football'},
+        {label: 'Baseball', value: 'baseball'},
+        {label: 'Hockey', value: 'hockey'},
+      ],
+    },
   ];
 
   return (
-    <ScrollView style={{ backgroundColor: Colors.default }}>
+    <ScrollView style={{backgroundColor: Colors.default}}>
       <View style={styles.form}>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <Input
             textAlign="left"
             placeholder="INPUT WITH CUSTOM ICON"
             label="Nom d'utilisateur"
             value={select.userName}
-            onChangeText={(userName) => setSelect({ ...select, userName })}
+            onChangeText={userName => setSelect({...select, userName})}
           />
         </View>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <Input
             textAlign="left"
             placeholder="INPUT WITH CUSTOM ICON"
             label="Nom d'utilisateur"
             value={select.firstName}
-            onChangeText={(firstName) => setSelect({ ...select, firstName })}
+            onChangeText={firstName => setSelect({...select, firstName})}
           />
         </View>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <Input
             textAlign="left"
             placeholder="INPUT WITH CUSTOM ICON"
             label="Nom d'utilisateur"
             value={select.name}
-            onChangeText={(name) => setSelect({ ...select, name })}
+            onChangeText={name => setSelect({...select, name})}
           />
         </View>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
             content={
@@ -120,17 +119,15 @@ export default function SigninNext({ navigation }) {
               setSelectedRoues(false);
               setSelectedFreins(false);
               setSelectedVelo(!selectedVelo);
-            }}
-          >
+            }}>
             {list.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
                   setSelectedVelo(!selectedVelo);
-                  setSelect({ ...select, velo: l.name });
+                  setSelect({...select, velo: l.name});
                 }}
-                bottomDivider
-              >
+                bottomDivider>
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
                   <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
@@ -139,7 +136,7 @@ export default function SigninNext({ navigation }) {
             ))}
           </ListItem.Accordion>
         </View>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
             content={
@@ -157,17 +154,15 @@ export default function SigninNext({ navigation }) {
               setSelectedRoues(false);
               setSelectedVelo(false);
               setSelectedFreins(!selectedFreins);
-            }}
-          >
+            }}>
             {listFreins.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
                   setSelectedFreins(!selectedFreins);
-                  setSelect({ ...select, freins: l.name });
+                  setSelect({...select, freins: l.name});
                 }}
-                bottomDivider
-              >
+                bottomDivider>
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
                   <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
@@ -176,7 +171,7 @@ export default function SigninNext({ navigation }) {
             ))}
           </ListItem.Accordion>
         </View>
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
             content={
@@ -193,17 +188,15 @@ export default function SigninNext({ navigation }) {
               setSelectedFreins(false);
               setSelectedVelo(false);
               setSelectedAir(!selectedAir);
-            }}
-          >
+            }}>
             {list.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
                   setSelectedAir(!selectedAir);
-                  setSelect({ ...select, air: l.name });
+                  setSelect({...select, air: l.name});
                 }}
-                bottomDivider
-              >
+                bottomDivider>
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
                   <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
@@ -213,7 +206,7 @@ export default function SigninNext({ navigation }) {
           </ListItem.Accordion>
         </View>
 
-        <View style={{ paddingBottom: 15 }}>
+        <View style={{paddingBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
             content={
@@ -230,17 +223,15 @@ export default function SigninNext({ navigation }) {
               setSelectedVelo(false);
               setSelectedFreins(false);
               setSelectedRoues(!selectedRoues);
-            }}
-          >
+            }}>
             {list.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
                   setSelectedRoues(!selectedRoues);
-                  setSelect({ ...select, roues: l.name });
+                  setSelect({...select, roues: l.name});
                 }}
-                bottomDivider
-              >
+                bottomDivider>
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
                   <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
@@ -250,11 +241,11 @@ export default function SigninNext({ navigation }) {
           </ListItem.Accordion>
         </View>
       </View>
-      <ButtonDefault handleSend={() => setOpen(!open)} title="Continuer" />
+      <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { padding: 22, marginTop: 22, maxHeight: 1200 }
+  form: {padding: 22, marginTop: 22, maxHeight: 1200},
 });

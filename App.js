@@ -12,8 +12,9 @@ import friendReducer from './src/redux/reducer';
 //Dependance
 import {NavigationContainer} from '@react-navigation/native';
 
-//Components
+//Navigation
 import Navigator from './src/navigation';
+
 const store = createStore(friendReducer);
 
 import {SafeAreaView, StyleSheet} from 'react-native';

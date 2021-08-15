@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, Image, Text} from 'react-native';
-import Colors from '../../../../constants/Colors';
-import ButtonDefault from '../../../components/Button/ButtonDefault';
+import Colors from '../../../constants/Colors';
+import ButtonDefault from '../../components/Button/ButtonDefault';
 
 export default function Homelogin({navigation}) {
   const [select, setSelect] = useState({

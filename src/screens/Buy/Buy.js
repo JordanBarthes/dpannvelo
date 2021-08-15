@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   StyleSheet,
@@ -7,156 +7,395 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  Dimensions
-} from "react-native";
+} from 'react-native';
 
-import Colors from "../../../constants/Colors";
+import Colors from '../../../constants/Colors';
 
-const WIDTH = Dimensions.get("window").width;
+export default function Buy({navigation}) {
+  const handleSend = () => navigation.navigate('Buy');
 
-export default function Buy() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View
-          style={{
-            minWidth: WIDTH - 60,
-            marginBottom: 0,
-            backgroundColor: Colors.white,
-            borderRadius: 10,
-            elevation: 0.8,
-            padding: 15,
-            margin: 30
-          }}
-        >
-          <TouchableOpacity activeOpacity={0.9} onPress={() => {}}>
-            <View style={styles.places}>
-              <View style={styles.space}>
-                <View>
-                  <Image
-                    style={{
-                      width: 45,
-                      height: 45,
-                      resizeMode: "contain"
-                    }}
-                    source={require("../../assets/point.png")}
-                  />
-                </View>
-                <View style={styles.contentText}>
-                  <Text style={styles.title}>200 points</Text>
-                  <Text style={styles.subTitle}>1 stationnement</Text>
-                </View>
+        <View style={{marginTop: 34}}>
+          <View style={styles.container}>
+            <View>
+              <View
+                style={{
+                  paddingLeft: 30,
+                  paddingBottom: 20,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: Colors.grey,
+                    fontWeight: '700',
+                  }}>
+                  Abonnement
+                </Text>
               </View>
-              <View style={styles.imageContent}>
-                <Text style={styles.text}>1,99€</Text>
+
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View
+                    style={{
+                      paddingTop: 10,
+                      marginRight: 15,
+                    }}>
+                    <Image
+                      style={{width: 24, height: 24, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/abonnement1.png')}
+                    />
+                  </View>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Type d'abonnement
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      Premium
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Type d'abonnement
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      Premium
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
-          </TouchableOpacity>
+          </View>
         </View>
-        <View
-          style={{
-            minWidth: WIDTH - 60,
-            marginBottom: 0,
-            backgroundColor: Colors.white,
-            borderRadius: 10,
-            elevation: 0.8,
-            padding: 15,
-            margin: 30
-          }}
-        >
-          <TouchableOpacity activeOpacity={0.9} onPress={() => {}}>
-            <View style={styles.places}>
-              <View style={styles.space}>
-                <View>
-                  <Image
-                    style={{
-                      width: 45,
-                      height: 45,
-                      resizeMode: "contain"
-                    }}
-                    source={require("../../assets/point.png")}
-                  />
-                </View>
-                <View style={styles.contentText}>
-                  <Text style={styles.title}>400 points</Text>
-                  <Text style={styles.subTitle}>2 stationnement</Text>
-                </View>
+        <View style={{marginTop: 34}}>
+          <View style={styles.container}>
+            <View>
+              <View
+                style={{
+                  paddingLeft: 30,
+                  paddingBottom: 20,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: Colors.grey,
+                    fontWeight: '700',
+                  }}>
+                  Informations
+                </Text>
               </View>
-              <View style={styles.imageContent}>
-                <Text style={styles.text}>3,98€</Text>
+
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Nom complet
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      Alexandre Dupont
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Pseudo
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      Alexandre
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Adresse email
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      jordanprofree@gmail.com
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Modifier le mot de passe
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Notification push
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
-          </TouchableOpacity>
+          </View>
         </View>
-        <View
-          style={{
-            minWidth: WIDTH - 60,
-            marginBottom: 0,
-            backgroundColor: Colors.white,
-            borderRadius: 10,
-            elevation: 0.8,
-            padding: 15,
-            margin: 30
-          }}
-        >
-          <TouchableOpacity activeOpacity={0.9} onPress={() => {}}>
-            <View style={styles.places}>
-              <View style={styles.space}>
-                <View>
-                  <Image
-                    style={{
-                      width: 45,
-                      height: 45,
-                      resizeMode: "contain"
-                    }}
-                    source={require("../../assets/point.png")}
-                  />
-                </View>
-                <View style={styles.contentText}>
-                  <Text style={styles.title}>800 points</Text>
-                  <Text style={styles.subTitle}>4 stationnement</Text>
-                </View>
+        <View style={{marginTop: 34}}>
+          <View style={styles.container}>
+            <View>
+              <View
+                style={{
+                  paddingLeft: 30,
+                  paddingBottom: 20,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: Colors.grey,
+                    fontWeight: '700',
+                  }}>
+                  Informations de payements
+                </Text>
               </View>
-              <View style={styles.imageContent}>
-                <Text style={styles.text}>7,96€</Text>
+
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Solde du compte
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>10€</Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.green,
+                        fontWeight: '700',
+                      }}>
+                      Approvisionner le solde
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/plus.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: '700',
+                      }}>
+                      Voir l'historique des dépannages
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleSend()}>
+                  <View>
+                    <Image
+                      style={{width: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
-          </TouchableOpacity>
+          </View>
         </View>
-        <View
-          style={{
-            minWidth: WIDTH - 60,
-            marginBottom: 10,
-            backgroundColor: Colors.white,
-            borderRadius: 10,
-            elevation: 0.8,
-            padding: 15,
-            margin: 30
-          }}
-        >
-          <TouchableOpacity activeOpacity={0.9} onPress={() => {}}>
-            <View style={styles.places}>
-              <View style={styles.space}>
-                <View>
-                  <Image
-                    style={{
-                      width: 45,
-                      height: 45,
-                      resizeMode: "contain"
-                    }}
-                    source={require("../../assets/point.png")}
-                  />
-                </View>
-                <View style={styles.contentText}>
-                  <Text style={styles.title}>2000 points</Text>
-                  <Text style={styles.subTitle}>20 stationnement</Text>
-                </View>
-              </View>
-              <View style={styles.imageContent}>
-                <Text style={styles.text}>19,90€</Text>
+        <View style={{marginTop: 34, marginBottom: 34}}>
+          <View style={[styles.content, {borderTopWidth: 0}]}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+              }}>
+              <View style={{justifyContent: 'center'}}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: Colors.red,
+                    fontWeight: '700',
+                  }}>
+                  Déconnexion
+                </Text>
               </View>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => handleSend()}>
+              <View>
+                <Image
+                  style={{width: 18, resizeMode: 'contain'}}
+                  source={require('../../assets/icons/Logout.png')}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -166,54 +405,26 @@ export default function Buy() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.default
+    backgroundColor: Colors.default,
   },
   content: {
-    paddingLeft: 12,
-    paddingRight: 12,
-    paddingTop: 3,
-    alignItems: "center"
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.white,
+    padding: 14,
+    paddingLeft: 30,
+    paddingRight: 30,
+    borderTopColor: Colors.borderGrey,
+    borderTopWidth: 1,
   },
-  containerTitle: {
-    padding: 10,
-    minWidth: WIDTH - 60,
-    alignItems: "flex-start",
-    paddingLeft: 15,
-    marginBottom: 10,
-    marginTop: 25
+  buttonContain: {
+    padding: 8,
+    paddingLeft: 28,
+    paddingRight: 28,
+    backgroundColor: Colors.blue,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  contentText: {
-    paddingTop: 7,
-    paddingBottom: 8,
-    width: WIDTH / 2.2,
-    paddingLeft: 20
-  },
-  places: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingRight: 10,
-    paddingLeft: 8
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: "bold"
-  },
-  subTitle: {
-    fontSize: 12
-  },
-  imageContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5
-  },
-  space: {
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 3,
-    color: Colors.blue
-  }
 });

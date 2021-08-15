@@ -1,5 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Dimensions, Animated, Text} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  Animated,
+  Modal,
+  Alert,
+  Text,
+  Pressable,
+} from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -7,11 +16,11 @@ import Geolocation from '@react-native-community/geolocation';
 import Theme from '../../../constants/Theme';
 import Colors from '../../../constants/Colors';
 
-import { Marker } from "react-native-maps";
+import {Marker} from 'react-native-maps';
 import DepanneMarker from '../../components/DepanneMarker';
 import CurrentLocation from '../../components/Button/CurrentLocation';
 import HeaderMaps from '../../components/Header/HeaderMaps';
-import PositionDesactived from '../../components/PositionDesactived';
+import ButtonDefault from '../../components/Button/ButtonDefault';
 
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
@@ -32,48 +41,55 @@ export default function Maps({navigation}) {
     isMapReady: false,
   });
 
-  const [startSearch, setStartSearch] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [startSearch, setSartSearch] = useState(false);
+  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+
+  const [problem, setProblem] = useState(null);
 
   let map;
   let deleteAsync = false;
 
   useEffect(() => {
     // Geolocation.requestAuthorization();
-    getPosition()
+    getPosition();
   }, []);
 
   const getPosition = async () => {
     if (!deleteAsync) {
       deleteAsync = true;
-      Geolocation.getCurrentPosition((location) => {
+      Geolocation.getCurrentPosition(
+        location => {
           if (!location.coords) {
             alert(
-              "We could not find your position. Please make sure your location service provider is On"
+              'We could not find your position. Please make sure your location service provider is On',
             );
             deleteAsync = false;
-            return setState({ ...state, position: false });
+            return setState({...state, position: false});
           }
           let region = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
             latitudeDelta: 0.045,
-            longitudeDelta: 0.045
+            longitudeDelta: 0.045,
           };
           deleteAsync = false;
           if (state.position) map.animateToRegion(region);
           return setState({
             region,
             position: true,
-            isMapReady: true
+            isMapReady: true,
           });
-        }, (e) => {
-          console.log("Error while trying to get location: ", e);
+        },
+        e => {
+          console.log('Error while trying to get location: ', e);
           alert(
-            "We could not find your position. Please make sure your location service provider is On"
+            'We could not find your position. Please make sure your location service provider is On',
           );
           deleteAsync = false;
-          setState({ ...state, position: false });
-        });
+          setState({...state, position: false});
+        },
+      );
     }
   };
 
@@ -94,17 +110,20 @@ export default function Maps({navigation}) {
     extrapolate: 'clamp',
   });
   const onReady = () => {
-    setState({ ...state, isMapReady: true })
+    setState({...state, isMapReady: true});
   };
 
-  const onRegionChange = (region) =>  {
-      setState({ ...state, region: {
+  const onRegionChange = region => {
+    setState({
+      ...state,
+      region: {
         latitudeDelta: 0.045,
         longitudeDelta: 0.045,
-        ...region
-      }
-    }, centerPosition());
-  }
+        ...region,
+      },
+    });
+    centerPosition();
+  };
 
   return (
     <View style={styles.container}>
@@ -151,29 +170,158 @@ export default function Maps({navigation}) {
           />
         )}
 
-      <Marker.Animated
-        coordinate={{
-          latitude: 37.4218492,
-          longitude: -122.0842669,
-          latitudeDelta: 0.045,
-          longitudeDelta: 0.045,
-        }}
-        onRegionChange={onRegionChange}
-        tracksViewChanges={false}
-        anchor={{ x: 0.69, y: 1 }}
-        centerOffset={{ x: -18, y: -60 }}
-        onPress={() => console.log("CLICK Marker Call Select Choos")}
-        icon={require('../../assets/icons/Location.png')}
-      />
+        <Marker.Animated
+          coordinate={{
+            latitude: 37.4218492,
+            longitude: -122.0842669,
+            latitudeDelta: 0.045,
+            longitudeDelta: 0.045,
+          }}
+          onRegionChange={onRegionChange}
+          tracksViewChanges={false}
+          anchor={{x: 0.69, y: 1}}
+          centerOffset={{x: -18, y: -60}}
+          onPress={() => console.log('CLICK Marker Call Select Choos')}
+          icon={require('../../assets/icons/Location.png')}
+        />
       </MapView>
-      <CurrentLocation bottom={HEIGHT - (HEIGHT - 100)} cb={centerPosition} />
+      <CurrentLocation bottom={HEIGHT * 0.28} cb={centerPosition} />
+      <View style={styles.button}>
+        <ButtonDefault
+          handleSend={() => setModalVisible(!modalVisible)}
+          title="J'ai besoin d'un dépanneur"
+        />
+      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Quel est le soucis ?</Text>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                buttonOulined
+                active={problem === 1}
+                handleSend={() => setProblem(1)}
+                title="Soucis 1"
+              />
+            </View>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                buttonOulined
+                active={problem === 2}
+                handleSend={() => setProblem(2)}
+                title="Soucis 1"
+              />
+            </View>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                buttonOulined
+                active={problem === 3}
+                handleSend={() => setProblem(3)}
+                title="Soucis 1"
+              />
+            </View>
+            <View style={{marginTop: 10}}>
+              <Text style={styles.modalText}>Confirmez votre position</Text>
+            </View>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                handleSend={() => {
+                  setModalVisible(!modalVisible);
+                  setModalConfirmVisible(true);
+                }}
+                title="Continuer"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalConfirmVisible}
+        onRequestClose={() => {
+          setModalConfirmVisible(!modalConfirmVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Confirmer de dépannages</Text>
+            <Text>
+              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+              nonumy eirmod tempor
+            </Text>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                handleSend={() => setModalConfirmVisible(!modalConfirmVisible)}
+                title="Confirmer"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+  },
+  buttonOption: {
+    width: WIDTH * 0.7,
+    marginBottom: 10,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button1: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 15,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  button: {
+    position: 'absolute',
+    width: WIDTH,
+    top: '87%',
   },
   headerMap: {
     minHeight: 80,
@@ -183,7 +331,7 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
-    backgroundColor: Colors.default
+    backgroundColor: Colors.default,
   },
   contentText: {
     marginLeft: 10,

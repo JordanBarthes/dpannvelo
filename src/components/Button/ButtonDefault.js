@@ -15,12 +15,16 @@ export default function ButtonDefault({
   title,
   handleSend,
   buttonOulined = false,
+  active = false,
 }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         activeOpacity={0.8}
-        style={buttonOulined ? styles.buttonOulined : styles.buttonContain}
+        style={[
+          buttonOulined ? styles.buttonOulined : styles.buttonContain,
+          active ? styles.active : styles.noactive,
+        ]}
         onPress={() => handleSend()}>
         <Text
           style={{
@@ -39,6 +43,11 @@ const styles = StyleSheet.create({
   container: {
     paddingLeft: 10,
     paddingRight: 10,
+  },
+  noactive: {},
+  active: {
+    borderColor: Colors.green,
+    borderWidth: 2,
   },
   buttonOulined: {
     backgroundColor: Colors.white,

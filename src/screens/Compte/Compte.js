@@ -11,7 +11,7 @@ import {
 
 import Colors from '../../../constants/Colors';
 
-export default function Buy({navigation}) {
+export default function Compte({navigation}) {
   const handleSend = () => navigation.navigate('Buy');
 
   return (

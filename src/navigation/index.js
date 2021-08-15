@@ -8,7 +8,7 @@ import Signin from '../screens/Login/Signin';
 import SigninNext from '../screens/Login/SigninNext';
 import Login from '../screens/Login/Login';
 import Homelogin from '../screens/Login/Homelogin';
-import Buy from '../screens/Buy/Buy';
+import Compte from '../screens/Compte/Compte';
 
 const Stack = createStackNavigator();
 
@@ -24,15 +24,6 @@ const Navigator = () => {
         headerTransparent: true,
         headerTitle: '',
       }}>
-      {/* {!connect && ( */}
-
-      <Stack.Screen name="Buy" component={Buy} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Homelogin" component={Homelogin} />
-      <Stack.Screen name="Signin" component={Signin} />
-      <Stack.Screen name="SigninNext" component={SigninNext} />
-
-      {/* )} */}
       <Stack.Screen
         options={{
           header: ({navigation}) => <View></View>,
@@ -40,6 +31,11 @@ const Navigator = () => {
         name="Maps"
         component={Maps}
       />
+      <Stack.Screen name="Compte" component={Compte} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Homelogin" component={Homelogin} />
+      <Stack.Screen name="Signin" component={Signin} />
+      <Stack.Screen name="SigninNext" component={SigninNext} />
     </Stack.Navigator>
   );
 };

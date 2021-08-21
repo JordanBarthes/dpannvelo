@@ -15,7 +15,6 @@ target 'dpannvelo' do
     :hermes_enabled => false
   )
 
-  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
   target 'dpannveloTests' do
     inherit! :complete

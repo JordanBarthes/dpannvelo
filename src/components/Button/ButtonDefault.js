@@ -16,19 +16,24 @@ export default function ButtonDefault({
   handleSend,
   buttonOulined = false,
   active = false,
+  disable = false,
 }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         activeOpacity={0.8}
+        disabled={disable}
         style={[
           buttonOulined ? styles.buttonOulined : styles.buttonContain,
           active ? styles.active : styles.noactive,
+          disable
+            ? styles.buttonContainDisable
+            : styles.buttonContainNotDisable,
         ]}
         onPress={() => handleSend()}>
         <Text
           style={{
-            color: buttonOulined ? Colors.BLACK : Colors.white,
+            color: buttonOulined || disable ? Colors.BLACK : Colors.white,
             fontSize: 16,
             fontWeight: '700',
           }}>
@@ -67,4 +72,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonContainDisable: {
+    backgroundColor: Colors.buttongrey,
+  },
+  buttonContainNotDisable: {},
 });

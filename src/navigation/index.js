@@ -1,14 +1,16 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import Animated from 'react-native-reanimated';
 import Maps from '../screens/Maps/Maps';
 import Signin from '../screens/Login/Signin';
 import SigninNext from '../screens/Login/SigninNext';
 import Login from '../screens/Login/Login';
 import Homelogin from '../screens/Login/Homelogin';
 import Compte from '../screens/Compte/Compte';
+import Abonnement from '../screens/Abonnement/Abonnement';
+import History from '../screens/History/History';
+import Factures from '../screens/Factures/Factures';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,14 @@ const Navigator = () => {
         headerTransparent: true,
         headerTitle: '',
       }}>
+      {connect && (
+        <>
+          <Stack.Screen name="Signin" component={Signin} />
+          <Stack.Screen name="SigninNext" component={SigninNext} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Homelogin" component={Homelogin} />
+        </>
+      )}
       <Stack.Screen
         options={{
           header: ({navigation}) => <View></View>,
@@ -31,11 +41,16 @@ const Navigator = () => {
         name="Maps"
         component={Maps}
       />
+      <Stack.Screen name="Factures" component={Factures} />
+      <Stack.Screen
+        options={{
+          header: ({navigation}) => <View></View>,
+        }}
+        name="Abonnement"
+        component={Abonnement}
+      />
+      <Stack.Screen name="History" component={History} />
       <Stack.Screen name="Compte" component={Compte} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Homelogin" component={Homelogin} />
-      <Stack.Screen name="Signin" component={Signin} />
-      <Stack.Screen name="SigninNext" component={SigninNext} />
     </Stack.Navigator>
   );
 };

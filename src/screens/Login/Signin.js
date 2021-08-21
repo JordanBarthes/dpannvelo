@@ -1,10 +1,11 @@
 // @ts-nocheck
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, ScrollView, View} from 'react-native';
 import {Input} from 'react-native-elements';
+import Toast from 'react-native-toast-message';
+
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
-import {ScrollView} from 'react-native-gesture-handler';
 
 export default function Signin({navigation}) {
   const [select, setSelect] = useState({
@@ -13,6 +14,13 @@ export default function Signin({navigation}) {
     confirm: '',
   });
 
+  React.useEffect(() => {
+    Toast.show({
+      text1: 'Hello',
+      text2: 'This is some something 👋',
+    });
+  }, []);
+
   const onSubmit = () => {
     console.log('Submit');
     return navigation.navigate('SigninNext');
@@ -20,6 +28,7 @@ export default function Signin({navigation}) {
 
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
+      <Toast ref={ref => Toast.setRef(ref)} />
       <View style={styles.form}>
         <View style={{paddingBottom: 15}}>
           <Input

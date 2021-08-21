@@ -8,6 +8,7 @@ export default {
   green: '#00CE8C',
   black: '#292929',
   grey: '#707070',
+  buttongrey: '#CCCCCC',
   borderGrey: '#EAEAEA',
   red: '#FF5555',
   tintColor,

@@ -5,9 +5,7 @@ import {
   Dimensions,
   Animated,
   Modal,
-  Alert,
   Text,
-  Pressable,
 } from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
@@ -21,6 +19,7 @@ import DepanneMarker from '../../components/DepanneMarker';
 import CurrentLocation from '../../components/Button/CurrentLocation';
 import HeaderMaps from '../../components/Header/HeaderMaps';
 import ButtonDefault from '../../components/Button/ButtonDefault';
+import ModalDefault from '../../components/Modal/ModalDefault';
 
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
@@ -43,7 +42,7 @@ export default function Maps({navigation}) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [startSearch, setSartSearch] = useState(false);
-  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const [problem, setProblem] = useState(null);
 
@@ -169,7 +168,6 @@ export default function Maps({navigation}) {
             }}
           />
         )}
-
         <Marker.Animated
           coordinate={{
             latitude: 37.4218492,
@@ -233,7 +231,6 @@ export default function Maps({navigation}) {
               <ButtonDefault
                 handleSend={() => {
                   setModalVisible(!modalVisible);
-                  setModalConfirmVisible(true);
                 }}
                 title="Continuer"
               />
@@ -241,29 +238,13 @@ export default function Maps({navigation}) {
           </View>
         </View>
       </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalConfirmVisible}
-        onRequestClose={() => {
-          setModalConfirmVisible(!modalConfirmVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Confirmer de dépannages</Text>
-            <Text>
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor
-            </Text>
-            <View style={styles.buttonOption}>
-              <ButtonDefault
-                handleSend={() => setModalConfirmVisible(!modalConfirmVisible)}
-                title="Confirmer"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ModalDefault
+        title="Confirmer de dépannages"
+        text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+              nonumy eirmod tempor"
+        callBack={open => setModal(open)}
+        modal={modal}
+      />
     </View>
   );
 }

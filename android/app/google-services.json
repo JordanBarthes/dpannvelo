@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "402799267483",
+    "project_id": "dpannvelo",
+    "storage_bucket": "dpannvelo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402799267483:android:6ce5931d60ebc05b77003e",
+        "android_client_info": {
+          "package_name": "com.dpannvelo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "402799267483-8rj6kve4iq1eglu7foi40b9chck8hjh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl9o5pnOEfe9e_P4GH4LskrdaD5JY8Dn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "402799267483-8rj6kve4iq1eglu7foi40b9chck8hjh4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

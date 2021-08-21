@@ -10,11 +10,13 @@ import Toast from 'react-native-toast-message';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 
-export default function Signin({navigation}) {
+export default function SigninDep({navigation}) {
   const [select, setSelect] = useState({
     email: '',
     password: '',
     confirm: '',
+    firstname: '',
+    name: '',
   });
 
   useEffect(() => {
@@ -55,7 +57,25 @@ export default function Signin({navigation}) {
     <ScrollView style={{backgroundColor: Colors.default}}>
       <Toast ref={ref => Toast.setRef(ref)} />
       <View style={styles.form}>
-        <Text>CRÉEZ UN COMPTE CLIENT</Text>
+        <Text>CRÉEZ UN COMPTE DÉPANNEUR</Text>
+        <View style={{paddingBottom: 15}}>
+          <Input
+            textAlign="left"
+            placeholder="INPUT WITH CUSTOM ICON"
+            label="Nom"
+            value={select.name}
+            onChangeText={name => setSelect({...select, name})}
+          />
+        </View>
+        <View style={{paddingBottom: 15}}>
+          <Input
+            textAlign="left"
+            placeholder="INPUT WITH CUSTOM ICON"
+            label="Prénom"
+            value={select.firstname}
+            onChangeText={firstname => setSelect({...select, firstname})}
+          />
+        </View>
         <View style={{paddingBottom: 15}}>
           <Input
             textAlign="left"

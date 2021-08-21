@@ -1,7 +1,11 @@
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
 
+// Dependencies
+import {createStackNavigator} from '@react-navigation/stack';
+import auth from '@react-native-firebase/auth';
+
+// Components
 import Maps from '../screens/Maps/Maps';
 import Signin from '../screens/Login/Signin';
 import SigninNext from '../screens/Login/SigninNext';
@@ -11,13 +15,35 @@ import Compte from '../screens/Compte/Compte';
 import Abonnement from '../screens/Abonnement/Abonnement';
 import History from '../screens/History/History';
 import Factures from '../screens/Factures/Factures';
+import SigninDep from '../screens/Login/SigninDep';
+import SigninNextDep from '../screens/Login/SigninNextDep';
 
 const Stack = createStackNavigator();
 
 const Navigator = () => {
-  const [connect, setConnection] = React.useState(false);
+  const [connect, setConnection] = useState(true);
+  const [initializing, setInitializing] = useState(true);
+  useEffect(() => {
+    auth().onAuthStateChanged(userState => {
+      console.log('ICI', userState);
+    });
+  }, []);
 
-  //Ajouter redux pour la connection
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  function onAuthStateChanged(user) {
+    console.log('********** USER ***********', user);
+    if (!user) {
+      setConnection(false);
+    }
+    //STORE USER
+    if (initializing) setInitializing(false);
+  }
+
+  if (initializing) return null;
 
   return (
     <Stack.Navigator
@@ -26,12 +52,14 @@ const Navigator = () => {
         headerTransparent: true,
         headerTitle: '',
       }}>
-      {connect && (
+      {!connect && (
         <>
+          <Stack.Screen name="Homelogin" component={Homelogin} />
           <Stack.Screen name="Signin" component={Signin} />
           <Stack.Screen name="SigninNext" component={SigninNext} />
+          <Stack.Screen name="SigninDep" component={SigninDep} />
+          <Stack.Screen name="SigninNextDep" component={SigninNextDep} />
           <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Homelogin" component={Homelogin} />
         </>
       )}
       <Stack.Screen

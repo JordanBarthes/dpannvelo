@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View} from 'react-native';
 import {ThemeProvider} from 'react-native-elements';
 
 //Redux
@@ -17,7 +17,7 @@ import Navigator from './src/navigation';
 
 const store = createStore(friendReducer);
 
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const App = () => {
   return (

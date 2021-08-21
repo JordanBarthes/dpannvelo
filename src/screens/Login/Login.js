@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
-import {Input} from 'react-native-elements';
 import {ImageBackground, StyleSheet, View, Text} from 'react-native';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
+
+//Dependance
+import auth from '@react-native-firebase/auth';
+import {Input} from 'react-native-elements';
 import {ScrollView} from 'react-native-gesture-handler';
 
 export default function Login({navigation}) {
@@ -13,6 +16,24 @@ export default function Login({navigation}) {
 
   const onSubmit = () => {
     console.log('Submit Form');
+
+    //   auth()
+    // .signInWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
+    // .then(() => {
+    //   console.log('User account created & signed in!');
+    // })
+    // .catch(error => {
+    //   if (error.code === 'auth/email-already-in-use') {
+    //     console.log('That email address is already in use!');
+    //   }
+
+    //   if (error.code === 'auth/invalid-email') {
+    //     console.log('That email address is invalid!');
+    //   }
+
+    //   console.error(error);
+    // });
+
     return navigation.navigate('Maps');
   };
 

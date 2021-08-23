@@ -40,13 +40,13 @@ export default function Homelogin({navigation}) {
       <View style={styles.containerHome}>
         <View style={{marginBottom: 20}}>
           <ButtonDefault
-            handleSend={() => navigation.navigate('Maps')}
+            handleSend={() => navigation.navigate('SigninDep')}
             title="Je suis dépanneur"
           />
         </View>
         <ButtonDefault
           buttonOulined
-          handleSend={() => navigation.navigate('Maps')}
+          handleSend={() => navigation.navigate('Signin')}
           title="Je suis utilisateur"
         />
       </View>

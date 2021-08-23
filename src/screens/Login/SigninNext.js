@@ -25,6 +25,7 @@ export default function SigninNext({navigation}) {
 
   const onSubmit = () => {
     console.log('Submit');
+    //UPDATE DB USERS
     return navigation.navigate('Maps');
   };
 
@@ -75,39 +76,52 @@ export default function SigninNext({navigation}) {
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
       <View style={styles.form}>
-        <View style={{paddingBottom: 15}}>
+        <View>
           <Input
             textAlign="left"
-            placeholder="INPUT WITH CUSTOM ICON"
-            label="Nom d'utilisateur"
+            placeholder="pseudo"
+            label="Username"
             value={select.userName}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
             onChangeText={userName => setSelect({...select, userName})}
           />
         </View>
-        <View style={{paddingBottom: 15}}>
+        <View>
           <Input
             textAlign="left"
-            placeholder="INPUT WITH CUSTOM ICON"
-            label="Nom d'utilisateur"
+            placeholder="john"
+            label="Firstname"
             value={select.firstName}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
             onChangeText={firstName => setSelect({...select, firstName})}
           />
         </View>
-        <View style={{paddingBottom: 15}}>
+        <View>
           <Input
             textAlign="left"
-            placeholder="INPUT WITH CUSTOM ICON"
-            label="Nom d'utilisateur"
+            placeholder="smith"
+            label="Name"
             value={select.name}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
             onChangeText={name => setSelect({...select, name})}
           />
         </View>
-        <View style={{paddingBottom: 15}}>
+        <View style={{marginBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
+            // containerStyle={{backgroundColor: Colors.blueLight}}
             content={
               <>
-                <ListItem.Content>
+                <ListItem.Content
+                  style={{
+                    paddingBottom: -25,
+                    paddingLeft: 10,
+                    paddingTop: 10,
+                    margin: -15,
+                  }}>
                   <ListItem.Title>Type de vélo</ListItem.Title>
                   <ListItem.Subtitle>{select.velo}</ListItem.Subtitle>
                 </ListItem.Content>
@@ -120,7 +134,7 @@ export default function SigninNext({navigation}) {
               setSelectedFreins(false);
               setSelectedVelo(!selectedVelo);
             }}>
-            {list.map((l, i) => (
+            {listFreins.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
@@ -136,12 +150,18 @@ export default function SigninNext({navigation}) {
             ))}
           </ListItem.Accordion>
         </View>
-        <View style={{paddingBottom: 15}}>
+        <View style={{marginBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
+            // containerStyle={{backgroundColor: Colors.blueLight}}
             content={
               <>
-                <ListItem.Content>
+                <ListItem.Content
+                  style={{
+                    paddingLeft: 10,
+                    margin: -15,
+                    marginBottom: -15,
+                  }}>
                   <ListItem.Title>Type de freins</ListItem.Title>
                   <ListItem.Subtitle>{select.freins}</ListItem.Subtitle>
                 </ListItem.Content>
@@ -171,12 +191,19 @@ export default function SigninNext({navigation}) {
             ))}
           </ListItem.Accordion>
         </View>
-        <View style={{paddingBottom: 15}}>
+        <View style={{marginBottom: 15}}>
           <ListItem.Accordion
             noIcon={true}
+            // containerStyle={{backgroundColor: Colors.blueLight}}
             content={
               <>
-                <ListItem.Content>
+                <ListItem.Content
+                  style={{
+                    paddingBottom: -25,
+                    paddingLeft: 10,
+                    paddingTop: 10,
+                    margin: -15,
+                  }}>
                   <ListItem.Title>Type de chambre a aire</ListItem.Title>
                   <ListItem.Subtitle>{select.air}</ListItem.Subtitle>
                 </ListItem.Content>
@@ -189,7 +216,7 @@ export default function SigninNext({navigation}) {
               setSelectedVelo(false);
               setSelectedAir(!selectedAir);
             }}>
-            {list.map((l, i) => (
+            {listFreins.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
@@ -206,12 +233,19 @@ export default function SigninNext({navigation}) {
           </ListItem.Accordion>
         </View>
 
-        <View style={{paddingBottom: 15}}>
+        <View style={{marginBottom: 30}}>
           <ListItem.Accordion
             noIcon={true}
+            // containerStyle={{backgroundColor: Colors.blueLight}}
             content={
               <>
-                <ListItem.Content>
+                <ListItem.Content
+                  style={{
+                    paddingBottom: -25,
+                    paddingLeft: 10,
+                    paddingTop: 10,
+                    margin: -15,
+                  }}>
                   <ListItem.Title>Type de roues</ListItem.Title>
                   <ListItem.Subtitle>{select.roues}</ListItem.Subtitle>
                 </ListItem.Content>
@@ -224,7 +258,7 @@ export default function SigninNext({navigation}) {
               setSelectedFreins(false);
               setSelectedRoues(!selectedRoues);
             }}>
-            {list.map((l, i) => (
+            {listFreins.map((l, i) => (
               <ListItem
                 key={i}
                 onPress={() => {
@@ -240,12 +274,12 @@ export default function SigninNext({navigation}) {
             ))}
           </ListItem.Accordion>
         </View>
+        <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
       </View>
-      <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  form: {padding: 22, marginTop: 22, maxHeight: 1200},
+  form: {padding: 20, marginTop: 50, maxHeight: 1200, marginBottom: 30},
 });

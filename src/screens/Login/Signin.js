@@ -10,6 +10,8 @@ import Toast from 'react-native-toast-message';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 
+import firestore from '@react-native-firebase/firestore';
+
 export default function Signin({navigation}) {
   const [select, setSelect] = useState({
     email: '',
@@ -84,16 +86,28 @@ export default function Signin({navigation}) {
 
     auth()
       .createUserWithEmailAndPassword(select.email, select.password)
-      .then(() => {
-        console.log('User account created & signed in!');
+      .then(token => {
+        console.log('User account created & signed in!', token);
 
         //SAVE IN DB USERS
 
-        Toast.show({
-          text1: 'Good',
-          text2: 'Welcome to dpannvelo 👋',
-        });
-        return navigation.navigate('SigninNext');
+        firestore()
+          .collection('users')
+          .add({
+            id: '',
+            email: select.email,
+          })
+          .then(() => {
+            console.log('User added!');
+            Toast.show({
+              text1: 'Good',
+              text2: 'Welcome to dpannvelo 👋',
+            });
+            return navigation.navigate('SigninNext');
+          })
+          .catch(error => {
+            console.error(error);
+          });
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, ScrollView, View, Text} from 'react-native';
 
@@ -19,7 +18,9 @@ export default function Signin({navigation}) {
     confirm: '',
   });
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log('HERER');
+  }, []);
 
   const validateEmail = email => {
     const re =
@@ -86,41 +87,43 @@ export default function Signin({navigation}) {
 
     auth()
       .createUserWithEmailAndPassword(select.email, select.password)
-      .then(token => {
-        console.log('User account created & signed in!', token);
+      .then(async token => {
+        console.log('User account created & signed in!');
 
-        //SAVE IN DB USERS
-
-        firestore()
-          .collection('users')
-          .add({
-            id: '',
-            email: select.email,
-          })
-          .then(() => {
-            console.log('User added!');
-            Toast.show({
-              text1: 'Good',
-              text2: 'Welcome to dpannvelo 👋',
-            });
-            return navigation.navigate('SigninNext');
-          })
-          .catch(error => {
-            console.error(error);
+        try {
+          await firestore().collection('users').doc(token.user.uid).set({
+            id: token.user.uid,
+            email: token.user.email,
           });
+
+          Toast.show({
+            type: 'error',
+            text1: 'Good',
+            text2: 'Welcome to dpannvelo 👋',
+          });
+          return navigation.navigate('SigninNext');
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
       })
       .catch(error => {
+        console.error(error);
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-
-          return navigation.navigate('SigninNext');
+          return Toast.show({
+            type: 'error',
+            text1: 'Sorry',
+            text2: 'That email address is already in use!',
+          });
         }
 
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+          return Toast.show({
+            type: 'error',
+            text1: 'Sorry',
+            text2: 'That email address is invalid!',
+          });
         }
-
-        console.error(error);
 
         return Toast.show({
           type: 'error',
@@ -182,6 +185,14 @@ export default function Signin({navigation}) {
         </View>
       </View>
       <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+
+      <View style={{marginTop: 30}}>
+        <ButtonDefault
+          buttonOulined
+          handleSend={() => navigation.navigate('Login')}
+          title="Se connecter"
+        />
+      </View>
     </ScrollView>
   );
 }

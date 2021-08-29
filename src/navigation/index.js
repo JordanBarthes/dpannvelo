@@ -5,6 +5,8 @@ import {StyleSheet, View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 
+import firestore from '@react-native-firebase/firestore';
+
 // Components
 import Maps from '../screens/Maps/Maps';
 import Signin from '../screens/Login/Signin';
@@ -21,24 +23,38 @@ import SigninNextDep from '../screens/Login/SigninNextDep';
 const Stack = createStackNavigator();
 
 const Navigator = () => {
-  const [connect, setConnection] = useState(true);
+  const [connect, setConnection] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  useEffect(() => {
-    auth().onAuthStateChanged(userState => {
-      console.log('ICI', userState);
-    });
-  }, []);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  function onAuthStateChanged(user) {
+  async function onAuthStateChanged(user) {
     console.log('********** USER ***********', user);
+
     if (!user) {
       setConnection(false);
+    } else {
+      const dataGet = firestore().collection('users').doc(user.uid);
+
+      const doc = await dataGet.get();
+
+      if (doc.exists) {
+        console.log('TEST => No such document!', doc.data());
+
+        setConnection(true);
+      } else {
+        auth()
+          .signOut()
+          .then(() => console.log('User signed out!'));
+        setConnection(false);
+
+        console.log('ERror data:');
+      }
     }
+
     //STORE USER
     if (initializing) setInitializing(false);
   }

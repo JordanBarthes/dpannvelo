@@ -46,7 +46,10 @@ export default function Homelogin({navigation}) {
         </View>
         <ButtonDefault
           buttonOulined
-          handleSend={() => navigation.navigate('Signin')}
+          handleSend={() => {
+            console.log('CLICK*********');
+            navigation.navigate('Signin');
+          }}
           title="Je suis utilisateur"
         />
       </View>

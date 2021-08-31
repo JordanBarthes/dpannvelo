@@ -23,6 +23,9 @@ import SigninNextDep from '../screens/Login/SigninNextDep';
 import {connect, useDispatch} from 'react-redux';
 
 import {GET_USER, DELETE_USER} from '../redux/type';
+import ModifNom from '../screens/ModifNom/ModifNom';
+import ModifPass from '../screens/ModifPass/ModifPass';
+import Payement from '../screens/Payement/Payement';
 
 const Stack = createStackNavigator();
 
@@ -91,15 +94,12 @@ const Navigator = ({user}) => {
             component={Maps}
           />
           <Stack.Screen name="Factures" component={Factures} />
-          <Stack.Screen
-            options={{
-              header: ({navigation}) => <View></View>,
-            }}
-            name="Abonnement"
-            component={Abonnement}
-          />
+          <Stack.Screen name="Abonnement" component={Abonnement} />
           <Stack.Screen name="History" component={History} />
           <Stack.Screen name="Compte" component={Compte} />
+          <Stack.Screen name="ModifNom" component={ModifNom} />
+          <Stack.Screen name="ModifPass" component={ModifPass} />
+          <Stack.Screen name="Payement" component={Payement} />
         </>
       )}
     </Stack.Navigator>

@@ -14,7 +14,7 @@ import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import ModalDefault from '../../components/Modal/ModalDefault';
 
-export default function Compte({navigation}) {
+function Abonnement({navigation}) {
   const [choice, setChoice] = useState('1');
 
   const [modal, setModal] = useState(false);
@@ -136,6 +136,8 @@ export default function Compte({navigation}) {
     </View>
   );
 }
+
+export default Abonnement;
 
 const styles = StyleSheet.create({
   container: {

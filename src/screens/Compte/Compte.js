@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
@@ -56,46 +57,45 @@ function Compte({navigation, user}) {
                 </Text>
               </View>
 
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
+              <Pressable onPress={() => navigation.navigate('Abonnement')}>
+                <View style={styles.content}>
                   <View
                     style={{
-                      paddingTop: 10,
-                      marginRight: 15,
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
                     }}>
-                    <Image
-                      style={{width: 24, height: 24, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/abonnement1.png')}
-                    />
-                  </View>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
+                    <View
                       style={{
-                        fontSize: 15,
-                        color: Colors.black,
+                        paddingTop: 10,
+                        marginRight: 15,
                       }}>
-                      Type d'abonnement
-                    </Text>
-                    <Text style={{marginTop: 2, color: Colors.grey}}>
-                      Premium
-                    </Text>
+                      <Image
+                        style={{width: 24, height: 24, resizeMode: 'contain'}}
+                        source={require('../../assets/icons/abonnement1.png')}
+                      />
+                    </View>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Type d'abonnement
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        Premium
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
+
                   <View>
                     <Image
                       style={{width: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
-                </TouchableOpacity>
-              </View>
+                </View>
+              </Pressable>
               <View style={styles.content}>
                 <View
                   style={{
@@ -137,66 +137,62 @@ function Compte({navigation, user}) {
                 </Text>
               </View>
 
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Nom complet
-                    </Text>
-                    <Text style={{marginTop: 2, color: Colors.grey}}>
-                      {user?.firstname} {user?.name}
-                    </Text>
+              <Pressable onPress={() => navigation.navigate('ModifNom')}>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Nom complet
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        {user?.firstname} {user?.name}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
                   <View>
                     <Image
                       style={{width: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Pseudo
-                    </Text>
-                    <Text style={{marginTop: 2, color: Colors.grey}}>
-                      {user?.userName ? user.userName : ''}
-                    </Text>
-                  </View>
                 </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
+              </Pressable>
+              <Pressable onPress={() => navigation.navigate('ModifNom')}>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Pseudo
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        {user?.userName ? user.userName : ''}
+                      </Text>
+                    </View>
+                  </View>
                   <View>
                     <Image
                       style={{width: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
-                </TouchableOpacity>
-              </View>
+                </View>
+              </Pressable>
               <View style={styles.content}>
                 <View
                   style={{
@@ -216,45 +212,33 @@ function Compte({navigation, user}) {
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
+              </View>
+              <Pressable onPress={() => navigation.navigate('ModifPass')}>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Modifier le mot de passe
+                      </Text>
+                    </View>
+                  </View>
                   <View>
                     <Image
                       style={{width: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Modifier le mot de passe
-                    </Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
-                  <View>
-                    <Image
-                      style={{width: 18, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/arrowRight.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content}>
+              </Pressable>
+              {/* <View style={styles.content}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -270,7 +254,7 @@ function Compte({navigation, user}) {
                     </Text>
                   </View>
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
         </View>
@@ -309,71 +293,68 @@ function Compte({navigation, user}) {
                     <Text style={{marginTop: 2, color: Colors.grey}}>10€</Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
+                <View>
+                  <Image
+                    style={{width: 18, resizeMode: 'contain'}}
+                    source={require('../../assets/icons/arrowRight.png')}
+                  />
+                </View>
+              </View>
+              <Pressable onPress={() => navigation.navigate('Payement')}>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.green,
+                        }}>
+                        Approvisionner le solde
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => handleSend()}>
+                    <View>
+                      <Image
+                        style={{width: 18, resizeMode: 'contain'}}
+                        source={require('../../assets/icons/plus.png')}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </Pressable>
+
+              <Pressable onPress={() => navigation.navigate('History')}>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Voir l'historique des dépannages
+                      </Text>
+                    </View>
+                  </View>
                   <View>
                     <Image
                       style={{width: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.green,
-                      }}>
-                      Approvisionner le solde
-                    </Text>
-                  </View>
                 </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
-                  <View>
-                    <Image
-                      style={{width: 18, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/plus.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Voir l'historique des dépannages
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleSend()}>
-                  <View>
-                    <Image
-                      style={{width: 18, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/arrowRight.png')}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </View>
+              </Pressable>
             </View>
           </View>
         </View>

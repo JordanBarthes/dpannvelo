@@ -6,10 +6,13 @@ import {
   Animated,
   Modal,
   Text,
+  Image,
+  Pressable,
 } from 'react-native';
 
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
+import MapViewDirections from 'react-native-maps-directions';
 
 import Theme from '../../../constants/Theme';
 import Colors from '../../../constants/Colors';
@@ -19,6 +22,8 @@ import CurrentLocation from '../../components/Button/CurrentLocation';
 import HeaderMaps from '../../components/Header/HeaderMaps';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import ModalDefault from '../../components/Modal/ModalDefault';
+
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY';
 
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
@@ -30,8 +35,8 @@ const orderMap = new Animated.Value(0);
 export default function Maps({navigation}) {
   const [state, setState] = useState({
     region: {
-      latitude: 48.806,
-      longitude: 2.576,
+      latitude: 48.9351526,
+      longitude: 2.5720603,
       latitudeDelta: 0.045,
       longitudeDelta: 0.045,
     },
@@ -40,6 +45,10 @@ export default function Maps({navigation}) {
   });
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [depanneurInLoading, setDepanneurInLoading] = useState(false);
+
+  const [modalSearchDep, setModalSearchDep] = useState(false);
 
   const [modalPositionVisible, setModalPosition] = useState(false);
 
@@ -63,8 +72,29 @@ export default function Maps({navigation}) {
     }
   }, [state.isMapReady]);
 
+  const searchDepanneur = position => {
+    console.log('****** POSITION VALIDE SEARCH DEPANNEUR *****', positionDrag);
+    setTimeout(() => {
+      setModalSearchDep(false);
+      setDepanneurInLoading(true);
+    }, 2000);
+  };
+
   const handlePositionValide = () => {
-    console.log('****** POSITION VALIDE *****', positionDrag);
+    //REQUEST TO GET SEARCH DEPANNEUR + ADD MODAL + Route
+
+    setModalSearchDep(true);
+    searchDepanneur(positionDrag);
+
+    //OPEN MODAL RECHERCHE
+
+    //OPEN ROUTE
+
+    //AVANT ARRIVER BUTTON IL EST ARRIVER
+    // npm i react-native-maps-directions
+    //DEPANNAGE EN COURS
+
+    // PUIS END
   };
 
   const getPosition = async () => {
@@ -165,10 +195,9 @@ export default function Maps({navigation}) {
         provider={PROVIDER_GOOGLE}
         showsMyLocationButton={false}
         rotateEnabled={false}
-        scrollEnabled={selectPosition ? false : true}
-        showsCompass={true}
+        showsCompass={false}
         customMapStyle={Theme.maps}
-        showsUserLocation={true}
+        showsUserLocation={false}
         onLayout={onReady}
         minZoomLevel={selectPosition ? 16 : 11}
         maxZoomLevel={18}
@@ -185,16 +214,16 @@ export default function Maps({navigation}) {
           state.position &&
           Array.from([
             {
-              latitude: 37.4204462,
-              longitude: -122.0242699,
+              latitude: 37.4219221,
+              longitude: -122.0540064,
             },
             {
-              latitude: 37.4104472,
-              longitude: -122.0742699,
+              latitude: 37.4219221,
+              longitude: -122.0240064,
             },
             {
-              latitude: 37.4404472,
-              longitude: -122.0142699,
+              latitude: 37.4219221,
+              longitude: -122.0140064,
             },
           ]).map((e, i) => (
             <DepanneMarker
@@ -212,8 +241,8 @@ export default function Maps({navigation}) {
           ))}
         <Marker.Animated
           coordinate={{
-            latitude: 37.4218492,
-            longitude: -122.0842669,
+            latitude: state.region.latitude,
+            longitude: state.region.longitude,
             latitudeDelta: 0.045,
             longitudeDelta: 0.045,
           }}
@@ -225,13 +254,13 @@ export default function Maps({navigation}) {
           icon={require('../../assets/icons/Location.png')}
         />
 
-        {selectPosition && (
+        {state.isMapReady && state.position && selectPosition && (
           <Marker.Animated
             onDragEnd={onDragEnd}
-            draggable
+            draggable={true}
             coordinate={{
-              latitude: 37.4205821,
-              longitude: -122.0840094,
+              latitude: 37.4219821,
+              longitude: -122.0840064,
               latitudeDelta: 0.045,
               longitudeDelta: 0.045,
             }}
@@ -240,21 +269,42 @@ export default function Maps({navigation}) {
             icon={require('../../assets/icons/Depannage.png')}
           />
         )}
+        {/* <MapViewDirections
+          origin={{
+            latitude: state.region.latitude,
+            longitude: state.region.longitude,
+          }}
+          destination={{
+            latitude: 37.4213821,
+            longitude: -122.0440064,
+          }}
+          strokeWidth={4}
+          strokeColor="#111111"
+          apikey={GOOGLE_MAPS_APIKEY}
+        /> */}
       </MapView>
       <CurrentLocation bottom={HEIGHT * 0.28} cb={centerPosition} />
       <View style={styles.button}>
-        <ButtonDefault
-          handleSend={() =>
-            selectPosition
-              ? handlePositionValide()
-              : setModalVisible(!modalVisible)
-          }
-          title={
-            selectPosition
-              ? 'Confirmer la position'
-              : "J'ai besoin d'un dépanneur"
-          }
-        />
+        {!depanneurInLoading && (
+          <ButtonDefault
+            handleSend={() =>
+              selectPosition
+                ? handlePositionValide()
+                : setModalVisible(!modalVisible)
+            }
+            title={
+              selectPosition
+                ? 'Confirmer la position'
+                : "J'ai besoin d'un dépanneur"
+            }
+          />
+        )}
+        {depanneurInLoading && (
+          <ButtonDefault
+            handleSend={() => console.log('LE depanneur est arriver')}
+            title="Le dépanneur est arrivé"
+          />
+        )}
       </View>
       <Modal
         animationType="slide"
@@ -265,6 +315,14 @@ export default function Maps({navigation}) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <View style={styles.backButton}>
+              <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                <Image
+                  style={{width: 32, height: 32, resizeMode: 'contain'}}
+                  source={require('../../assets/icons/Location.png')}
+                />
+              </Pressable>
+            </View>
             <Text style={styles.modalText}>Quel est le soucis ?</Text>
             <View style={styles.buttonOption}>
               <ButtonDefault
@@ -318,6 +376,21 @@ export default function Maps({navigation}) {
         }}
         modal={modalPositionVisible}
       />
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalSearchDep}
+        onRequestClose={() => {
+          setModalSearchDep(!modalSearchDep);
+        }}>
+        <View style={styles.topView}>
+          <View style={styles.modalLoading}>
+            <Text style={styles.textModalLoading}>
+              Veuillez patienter, nous attendons la confirmation d’un dépanneur.
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -326,9 +399,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  textModalLoading: {
+    fontSize: 16,
+  },
   buttonOption: {
     width: WIDTH * 0.7,
     marginBottom: 10,
+  },
+  modalLoading: {
+    backgroundColor: Colors.white,
+    padding: 10,
+    paddingLeft: 30,
+    paddingRight: 30,
+    borderRadius: 10,
+  },
+  topView: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 100,
   },
   centeredView: {
     flex: 1,

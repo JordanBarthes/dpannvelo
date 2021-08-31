@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler';
 
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {ThemeProvider} from 'react-native-elements';
 
 //Redux
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
-import friendReducer from './src/redux/reducer';
+import reducer from './src/redux/reducer';
 
 //Dependance
 import {NavigationContainer} from '@react-navigation/native';
@@ -15,9 +15,7 @@ import {NavigationContainer} from '@react-navigation/native';
 //Navigation
 import Navigator from './src/navigation';
 
-const store = createStore(friendReducer);
-
-import {StyleSheet} from 'react-native';
+const store = createStore(reducer);
 
 const App = () => {
   return (
@@ -32,7 +30,5 @@ const App = () => {
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default App;

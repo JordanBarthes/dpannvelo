@@ -2,14 +2,11 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, ScrollView, View, Text} from 'react-native';
 
 //Dependance
-import auth from '@react-native-firebase/auth';
 import {Input} from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
-
-import firestore from '@react-native-firebase/firestore';
 
 export default function Signin({navigation}) {
   const [select, setSelect] = useState({
@@ -17,10 +14,6 @@ export default function Signin({navigation}) {
     password: '',
     confirm: '',
   });
-
-  useEffect(() => {
-    console.log('HERER');
-  }, []);
 
   const validateEmail = email => {
     const re =
@@ -81,64 +74,10 @@ export default function Signin({navigation}) {
       });
     }
 
-    //   auth()
-    // .signOut()
-    // .then(() => console.log('User signed out!'));
-
-    auth()
-      .createUserWithEmailAndPassword(select.email, select.password)
-      .then(async token => {
-        console.log('User account created & signed in!');
-
-        try {
-          await firestore().collection('users').doc(token.user.uid).set({
-            id: token.user.uid,
-            email: token.user.email,
-          });
-
-          Toast.show({
-            type: 'error',
-            text1: 'Good',
-            text2: 'Welcome to dpannvelo 👋',
-          });
-          return navigation.navigate('SigninNext');
-        } catch (err) {
-          console.error(err);
-          throw err;
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        if (error.code === 'auth/email-already-in-use') {
-          return Toast.show({
-            type: 'error',
-            text1: 'Sorry',
-            text2: 'That email address is already in use!',
-          });
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          return Toast.show({
-            type: 'error',
-            text1: 'Sorry',
-            text2: 'That email address is invalid!',
-          });
-        }
-
-        return Toast.show({
-          type: 'error',
-          position: 'top',
-          text1: 'Error',
-          text2: 'Error contact dpannvelo',
-          visibilityTime: 4000,
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40,
-          onShow: () => {},
-          onHide: () => {},
-          onPress: () => {},
-        });
-      });
+    return navigation.navigate('SigninNext', {
+      email: select.email,
+      password: select.password,
+    });
   };
 
   return (

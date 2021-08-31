@@ -49,16 +49,17 @@ export default function Maps({navigation}) {
   let map;
   let deleteAsync = false;
 
-  useEffect(() => {
-    // Geolocation.requestAuthorization();
-    getPosition();
-  }, []);
+  // useEffect(() => {
+  //   // Geolocation.requestAuthorization();
+  //   getPosition();
+  // }, []);
 
   const getPosition = async () => {
     if (!deleteAsync) {
       deleteAsync = true;
       Geolocation.getCurrentPosition(
         location => {
+          console.log('location', location);
           if (!location.coords) {
             alert(
               'We could not find your position. Please make sure your location service provider is On',
@@ -110,6 +111,7 @@ export default function Maps({navigation}) {
   });
   const onReady = () => {
     setState({...state, isMapReady: true});
+    getPosition();
   };
 
   const onRegionChange = region => {

@@ -1,19 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, View, Image, Text} from 'react-native';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 
 export default function Homelogin({navigation}) {
-  const [select, setSelect] = useState({
-    email: '',
-    password: '',
-  });
-
-  const onSubmit = () => {
-    console.log('Submit Form');
-    return navigation.navigate('Maps');
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.image}>

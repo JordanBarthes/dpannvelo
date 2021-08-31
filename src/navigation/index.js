@@ -20,11 +20,16 @@ import Factures from '../screens/Factures/Factures';
 import SigninDep from '../screens/Login/SigninDep';
 import SigninNextDep from '../screens/Login/SigninNextDep';
 
+import {connect, useDispatch} from 'react-redux';
+
+import {GET_USER, DELETE_USER} from '../redux/type';
+
 const Stack = createStackNavigator();
 
-const Navigator = () => {
-  const [connect, setConnection] = useState(false);
+const Navigator = ({user}) => {
   const [initializing, setInitializing] = useState(true);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
@@ -34,28 +39,27 @@ const Navigator = () => {
   async function onAuthStateChanged(user) {
     console.log('********** USER ***********', user);
 
-    if (!user) {
-      setConnection(false);
-    } else {
+    if (user) {
       const dataGet = firestore().collection('users').doc(user.uid);
 
       const doc = await dataGet.get();
 
       if (doc.exists) {
-        console.log('TEST => No such document!', doc.data());
-
-        setConnection(true);
+        const data = doc.data();
+        console.log('STORE USER', data);
+        dispatch({type: GET_USER, payload: data});
       } else {
         auth()
           .signOut()
-          .then(() => console.log('User signed out!'));
-        setConnection(false);
-
-        console.log('ERror data:');
+          .then(() => {
+            console.log('DECONNECTION USER');
+            dispatch({type: DELETE_USER});
+          })
+          .catch(() => {
+            dispatch({type: DELETE_USER});
+          });
       }
     }
-
-    //STORE USER
     if (initializing) setInitializing(false);
   }
 
@@ -64,11 +68,11 @@ const Navigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: styles.headerNone,
-        headerTransparent: true,
+        // headerStyle: styles.headerNone,
+        // headerTransparent: true,
         headerTitle: '',
       }}>
-      {!connect && (
+      {!user ? (
         <>
           <Stack.Screen name="Homelogin" component={Homelogin} />
           <Stack.Screen name="Signin" component={Signin} />
@@ -77,29 +81,38 @@ const Navigator = () => {
           <Stack.Screen name="SigninNextDep" component={SigninNextDep} />
           <Stack.Screen name="Login" component={Login} />
         </>
+      ) : (
+        <>
+          <Stack.Screen
+            options={{
+              header: ({navigation}) => <View></View>,
+            }}
+            name="Maps"
+            component={Maps}
+          />
+          <Stack.Screen name="Factures" component={Factures} />
+          <Stack.Screen
+            options={{
+              header: ({navigation}) => <View></View>,
+            }}
+            name="Abonnement"
+            component={Abonnement}
+          />
+          <Stack.Screen name="History" component={History} />
+          <Stack.Screen name="Compte" component={Compte} />
+        </>
       )}
-      <Stack.Screen
-        options={{
-          header: ({navigation}) => <View></View>,
-        }}
-        name="Maps"
-        component={Maps}
-      />
-      <Stack.Screen name="Factures" component={Factures} />
-      <Stack.Screen
-        options={{
-          header: ({navigation}) => <View></View>,
-        }}
-        name="Abonnement"
-        component={Abonnement}
-      />
-      <Stack.Screen name="History" component={History} />
-      <Stack.Screen name="Compte" component={Compte} />
     </Stack.Navigator>
   );
 };
 
-export default Navigator;
+const mapStateToProps = (state, props) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(Navigator);
 
 const styles = StyleSheet.create({
   stack: {

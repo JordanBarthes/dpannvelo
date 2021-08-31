@@ -1,17 +1,30 @@
-import { combineReducers } from "redux";
+import {combineReducers} from 'redux';
+import {GET_USER, DELETE_USER} from '../type';
 
-const INITIAL_STATE = {
-  current: [],
-  possible: ["Allie", "Gator", "Lizzie", "Reptar"]
+const USER_STATE = {
+  email: '',
+  userName: '',
+  name: '',
+  firstName: '',
+  velo: '',
+  freins: '',
+  air: '',
+  roues: '',
 };
 
-const friendReducer = (state = INITIAL_STATE, action) => {
+const userReducer = (state = USER_STATE, action) => {
   switch (action.type) {
+    case GET_USER: {
+      return action.payload;
+    }
+    case DELETE_USER: {
+      return null;
+    }
     default:
-      return state;
+      return null;
   }
 };
 
 export default combineReducers({
-  friends: friendReducer
+  user: userReducer,
 });

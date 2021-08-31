@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {ImageBackground, StyleSheet, View, Text} from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 
@@ -8,33 +14,44 @@ import auth from '@react-native-firebase/auth';
 import {Input} from 'react-native-elements';
 import {ScrollView} from 'react-native-gesture-handler';
 
-export default function Login({navigation}) {
+import firestore from '@react-native-firebase/firestore';
+import {connect, useDispatch} from 'react-redux';
+
+import {GET_USER, DELETE_USER} from '../../redux/type';
+
+function Login({navigation}) {
   const [select, setSelect] = useState({
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const onSubmit = () => {
-    console.log('Submit Form');
+    setLoading(true);
+    auth()
+      .signInWithEmailAndPassword(select.email, select.password)
+      .then(async res => {
+        try {
+          const user = await firestore()
+            .collection('users')
+            .doc(res.user.uid)
+            .get();
 
-    //   auth()
-    // .signInWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
-    // .then(() => {
-    //   console.log('User account created & signed in!');
-    // })
-    // .catch(error => {
-    //   if (error.code === 'auth/email-already-in-use') {
-    //     console.log('That email address is already in use!');
-    //   }
+          const data = user.data();
 
-    //   if (error.code === 'auth/invalid-email') {
-    //     console.log('That email address is invalid!');
-    //   }
-
-    //   console.error(error);
-    // });
-
-    return navigation.navigate('Maps');
+          dispatch({type: GET_USER, payload: data});
+        } catch (err) {
+          console.error(err);
+          dispatch({type: DELETE_USER});
+          throw err;
+        }
+      })
+      .catch(error => {
+        setLoading(false);
+        console.error(error);
+      });
   };
 
   return (
@@ -75,7 +92,11 @@ export default function Login({navigation}) {
                 onChangeText={password => setSelect({...select, password})}
               />
             </View>
-            <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+            {loading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+            )}
             <View style={{marginTop: 10, marginBottom: 30}}>
               <Text style={{textAlign: 'center', color: Colors.grey}}>
                 Mot de passe oublié ?
@@ -92,6 +113,15 @@ export default function Login({navigation}) {
     </View>
   );
 }
+
+const mapStateToProps = (state, props) => {
+  console.log('*****USER LOGIN ******', state);
+  return {
+    user: state,
+  };
+};
+
+export default connect(mapStateToProps)(Login);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {
   StyleSheet,
@@ -9,15 +9,36 @@ import {
   ScrollView,
 } from 'react-native';
 
-import Colors from '../../../constants/Colors';
+import auth from '@react-native-firebase/auth';
 
-export default function Compte({navigation}) {
-  const handleSend = () => navigation.navigate('Buy');
+import {connect, useDispatch} from 'react-redux';
+import Colors from '../../../constants/Colors';
+import {DELETE_USER} from '../../redux/type';
+
+function Compte({navigation, user}) {
+  const dispatch = useDispatch();
+
+  const handleSend = () => {
+    navigation.navigate('Buy');
+  };
+
+  const handleDeco = () => {
+    auth()
+      .signOut()
+      .then(() => {
+        dispatch({type: DELETE_USER});
+
+        navigation.navigate('Homelogin');
+      })
+      .catch(() => {
+        dispatch({type: DELETE_USER});
+      });
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={{marginTop: 34}}>
+        <View style={{marginTop: 20}}>
           <View style={styles.container}>
             <View>
               <View
@@ -30,7 +51,6 @@ export default function Compte({navigation}) {
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: Colors.grey,
-                    fontWeight: '700',
                   }}>
                   Abonnement
                 </Text>
@@ -57,7 +77,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Type d'abonnement
                     </Text>
@@ -88,7 +107,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Type d'abonnement
                     </Text>
@@ -114,7 +132,6 @@ export default function Compte({navigation}) {
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: Colors.grey,
-                    fontWeight: '700',
                   }}>
                   Informations
                 </Text>
@@ -131,12 +148,11 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Nom complet
                     </Text>
                     <Text style={{marginTop: 2, color: Colors.grey}}>
-                      Alexandre Dupont
+                      {user?.firstname} {user?.name}
                     </Text>
                   </View>
                 </View>
@@ -162,12 +178,11 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Pseudo
                     </Text>
                     <Text style={{marginTop: 2, color: Colors.grey}}>
-                      Alexandre
+                      {user?.userName ? user.userName : ''}
                     </Text>
                   </View>
                 </View>
@@ -193,12 +208,11 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Adresse email
                     </Text>
                     <Text style={{marginTop: 2, color: Colors.grey}}>
-                      jordanprofree@gmail.com
+                      {user?.email ? user.email : ''}
                     </Text>
                   </View>
                 </View>
@@ -224,7 +238,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Modifier le mot de passe
                     </Text>
@@ -252,7 +265,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Notification push
                     </Text>
@@ -275,7 +287,6 @@ export default function Compte({navigation}) {
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: Colors.grey,
-                    fontWeight: '700',
                   }}>
                   Informations de payements
                 </Text>
@@ -292,7 +303,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Solde du compte
                     </Text>
@@ -321,7 +331,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.green,
-                        fontWeight: '700',
                       }}>
                       Approvisionner le solde
                     </Text>
@@ -349,7 +358,6 @@ export default function Compte({navigation}) {
                       style={{
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: '700',
                       }}>
                       Voir l'historique des dépannages
                     </Text>
@@ -370,37 +378,44 @@ export default function Compte({navigation}) {
           </View>
         </View>
         <View style={{marginTop: 34, marginBottom: 34}}>
-          <View style={[styles.content, {borderTopWidth: 0}]}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-              }}>
-              <View style={{justifyContent: 'center'}}>
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: Colors.red,
-                    fontWeight: '700',
-                  }}>
-                  Déconnexion
-                </Text>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => handleDeco()}>
+            <View style={[styles.content, {borderTopWidth: 0}]}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                }}>
+                <View style={{justifyContent: 'center'}}>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: Colors.red,
+                    }}>
+                    Déconnexion
+                  </Text>
+                </View>
               </View>
-            </View>
-            <TouchableOpacity activeOpacity={0.8} onPress={() => handleSend()}>
               <View>
                 <Image
                   style={{width: 18, resizeMode: 'contain'}}
                   source={require('../../assets/icons/Logout.png')}
                 />
               </View>
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
   );
 }
+
+const mapStateToProps = (state, props) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(Compte);
 
 const styles = StyleSheet.create({
   container: {

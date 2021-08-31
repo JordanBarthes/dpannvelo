@@ -21,7 +21,7 @@ const ModalDefault = ({title, text, callBack, modal}) => {
           <View style={styles.buttonOption}>
             <ButtonDefault
               handleSend={() => callBack(!modal)}
-              title="Confirmer"
+              title="Continuer"
             />
           </View>
         </View>

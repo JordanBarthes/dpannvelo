@@ -8,13 +8,12 @@ import {
   Text,
 } from 'react-native';
 
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
 import Theme from '../../../constants/Theme';
 import Colors from '../../../constants/Colors';
 
-import {Marker} from 'react-native-maps';
 import DepanneMarker from '../../components/DepanneMarker';
 import CurrentLocation from '../../components/Button/CurrentLocation';
 import HeaderMaps from '../../components/Header/HeaderMaps';
@@ -41,6 +40,13 @@ export default function Maps({navigation}) {
   });
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [modalPositionVisible, setModalPosition] = useState(false);
+
+  const [selectPosition, setSelectPosition] = useState(false);
+
+  const [position, setPosition] = useState(null);
+
   const [startSearch, setSartSearch] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -48,11 +54,18 @@ export default function Maps({navigation}) {
 
   let map;
   let deleteAsync = false;
+  let positionDrag = null;
 
-  // useEffect(() => {
-  //   // Geolocation.requestAuthorization();
-  //   getPosition();
-  // }, []);
+  useEffect(() => {
+    // Geolocation.requestAuthorization();
+    if (state.isMapReady) {
+      getPosition();
+    }
+  }, [state.isMapReady]);
+
+  const handlePositionValide = () => {
+    console.log('****** POSITION VALIDE *****', positionDrag);
+  };
 
   const getPosition = async () => {
     if (!deleteAsync) {
@@ -72,6 +85,11 @@ export default function Maps({navigation}) {
             longitude: location.coords.longitude,
             latitudeDelta: 0.045,
             longitudeDelta: 0.045,
+          };
+
+          positionDrag = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
           };
           deleteAsync = false;
           if (state.position) map.animateToRegion(region);
@@ -111,7 +129,6 @@ export default function Maps({navigation}) {
   });
   const onReady = () => {
     setState({...state, isMapReady: true});
-    getPosition();
   };
 
   const onRegionChange = region => {
@@ -124,6 +141,11 @@ export default function Maps({navigation}) {
       },
     });
     centerPosition();
+  };
+
+  const onDragEnd = e => {
+    console.log('e.nativeEvent.coordinate', e.nativeEvent.coordinate);
+    positionDrag = e.nativeEvent.coordinate;
   };
 
   return (
@@ -143,11 +165,12 @@ export default function Maps({navigation}) {
         provider={PROVIDER_GOOGLE}
         showsMyLocationButton={false}
         rotateEnabled={false}
+        scrollEnabled={selectPosition ? false : true}
         showsCompass={true}
         customMapStyle={Theme.maps}
         showsUserLocation={true}
         onLayout={onReady}
-        minZoomLevel={14.7}
+        minZoomLevel={selectPosition ? 16 : 11}
         maxZoomLevel={18}
         style={[
           styles.map,
@@ -157,19 +180,36 @@ export default function Maps({navigation}) {
         ]}
         ref={mapView => (map = mapView)}
         initialRegion={state.region}>
-        {state.isMapReady && state.position && (
-          <DepanneMarker
-            source={require('../../assets/icons/Depannage.png')}
-            driver={{
-              coordinate: {
-                latitude: 37.4204472,
-                longitude: -122.0842699,
-                latitudeDelta: 0.045,
-                longitudeDelta: 0.045,
-              },
-            }}
-          />
-        )}
+        {state.isMapReady &&
+          !selectPosition &&
+          state.position &&
+          Array.from([
+            {
+              latitude: 37.4204462,
+              longitude: -122.0242699,
+            },
+            {
+              latitude: 37.4104472,
+              longitude: -122.0742699,
+            },
+            {
+              latitude: 37.4404472,
+              longitude: -122.0142699,
+            },
+          ]).map((e, i) => (
+            <DepanneMarker
+              key={i}
+              source={require('../../assets/icons/Depannage.png')}
+              driver={{
+                coordinate: {
+                  latitude: e.latitude,
+                  longitude: e.longitude,
+                  latitudeDelta: 0.045,
+                  longitudeDelta: 0.045,
+                },
+              }}
+            />
+          ))}
         <Marker.Animated
           coordinate={{
             latitude: 37.4218492,
@@ -184,12 +224,36 @@ export default function Maps({navigation}) {
           onPress={() => console.log('CLICK Marker Call Select Choos')}
           icon={require('../../assets/icons/Location.png')}
         />
+
+        {selectPosition && (
+          <Marker.Animated
+            onDragEnd={onDragEnd}
+            draggable
+            coordinate={{
+              latitude: 37.4205821,
+              longitude: -122.0840094,
+              latitudeDelta: 0.045,
+              longitudeDelta: 0.045,
+            }}
+            centerOffset={{x: -18, y: -60}}
+            anchor={{x: 0.69, y: 1}}
+            icon={require('../../assets/icons/Depannage.png')}
+          />
+        )}
       </MapView>
       <CurrentLocation bottom={HEIGHT * 0.28} cb={centerPosition} />
       <View style={styles.button}>
         <ButtonDefault
-          handleSend={() => setModalVisible(!modalVisible)}
-          title="J'ai besoin d'un dépanneur"
+          handleSend={() =>
+            selectPosition
+              ? handlePositionValide()
+              : setModalVisible(!modalVisible)
+          }
+          title={
+            selectPosition
+              ? 'Confirmer la position'
+              : "J'ai besoin d'un dépanneur"
+          }
         />
       </View>
       <Modal
@@ -226,13 +290,11 @@ export default function Maps({navigation}) {
                 title="Soucis 1"
               />
             </View>
-            <View style={{marginTop: 10}}>
-              <Text style={styles.modalText}>Confirmez votre position</Text>
-            </View>
             <View style={styles.buttonOption}>
               <ButtonDefault
                 handleSend={() => {
                   setModalVisible(!modalVisible);
+                  setModalPosition(!modalPositionVisible);
                 }}
                 title="Continuer"
               />
@@ -246,6 +308,15 @@ export default function Maps({navigation}) {
               nonumy eirmod tempor"
         callBack={open => setModal(open)}
         modal={modal}
+      />
+      <ModalDefault
+        title="Confirmer votre position"
+        text="Deplacer le Marker a votre position puis confirmer"
+        callBack={open => {
+          setModalPosition(open);
+          setSelectPosition(true);
+        }}
+        modal={modalPositionVisible}
       />
     </View>
   );

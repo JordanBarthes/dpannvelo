@@ -14,6 +14,7 @@ import {NavigationContainer} from '@react-navigation/native';
 
 //Navigation
 import Navigator from './src/navigation';
+import Toast from 'react-native-toast-message';
 
 const store = createStore(reducer);
 

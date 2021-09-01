@@ -8,6 +8,7 @@ import {
   Text,
   Image,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps';
@@ -22,6 +23,7 @@ import CurrentLocation from '../../components/Button/CurrentLocation';
 import HeaderMaps from '../../components/Header/HeaderMaps';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import ModalDefault from '../../components/Modal/ModalDefault';
+import ModalAsk from '../../components/Modal/ModalAsk';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY';
 
@@ -50,6 +52,8 @@ export default function Maps({navigation}) {
 
   const [modalSearchDep, setModalSearchDep] = useState(false);
 
+  const [waitDep, setWaitDep] = useState(false);
+
   const [modalPositionVisible, setModalPosition] = useState(false);
 
   const [selectPosition, setSelectPosition] = useState(false);
@@ -58,12 +62,16 @@ export default function Maps({navigation}) {
 
   const [startSearch, setSartSearch] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modalAsk, setModalAsk] = useState(false);
 
   const [problem, setProblem] = useState(null);
 
   let map;
   let deleteAsync = false;
-  let positionDrag = null;
+  let positionDrag = {
+    latitude: state.region.latitude,
+    longitude: state.region.longitude,
+  };
 
   useEffect(() => {
     // Geolocation.requestAuthorization();
@@ -80,10 +88,18 @@ export default function Maps({navigation}) {
     }, 2000);
   };
 
+  const handleDeleteDep = () => {
+    console.log('DELETE DEPANNAGE EN COURS');
+    setWaitDep(false);
+    setDepanneurInLoading(false);
+    setSelectPosition(false);
+  };
+
   const handlePositionValide = () => {
     //REQUEST TO GET SEARCH DEPANNEUR + ADD MODAL + Route
 
     setModalSearchDep(true);
+    setWaitDep(true);
     searchDepanneur(positionDrag);
 
     //OPEN MODAL RECHERCHE
@@ -102,7 +118,6 @@ export default function Maps({navigation}) {
       deleteAsync = true;
       Geolocation.getCurrentPosition(
         location => {
-          console.log('location', location);
           if (!location.coords) {
             alert(
               'We could not find your position. Please make sure your location service provider is On',
@@ -199,7 +214,7 @@ export default function Maps({navigation}) {
         customMapStyle={Theme.maps}
         showsUserLocation={false}
         onLayout={onReady}
-        minZoomLevel={selectPosition ? 16 : 11}
+        minZoomLevel={12}
         maxZoomLevel={18}
         style={[
           styles.map,
@@ -228,7 +243,7 @@ export default function Maps({navigation}) {
           ]).map((e, i) => (
             <DepanneMarker
               key={i}
-              source={require('../../assets/icons/Depannage.png')}
+              source={require('../../assets/icons/Online.png')}
               driver={{
                 coordinate: {
                   latitude: e.latitude,
@@ -239,51 +254,58 @@ export default function Maps({navigation}) {
               }}
             />
           ))}
-        <Marker.Animated
-          coordinate={{
-            latitude: state.region.latitude,
-            longitude: state.region.longitude,
-            latitudeDelta: 0.045,
-            longitudeDelta: 0.045,
-          }}
-          onRegionChange={onRegionChange}
-          tracksViewChanges={false}
-          anchor={{x: 0.69, y: 1}}
-          centerOffset={{x: -18, y: -60}}
-          onPress={() => console.log('CLICK Marker Call Select Choos')}
-          icon={require('../../assets/icons/Location.png')}
-        />
+        {!selectPosition && (
+          <Marker.Animated
+            coordinate={{
+              latitude: state.region.latitude,
+              longitude: state.region.longitude,
+              latitudeDelta: 0.045,
+              longitudeDelta: 0.045,
+            }}
+            onRegionChange={onRegionChange}
+            tracksViewChanges={false}
+            anchor={{x: 0.69, y: 1}}
+            centerOffset={{x: -18, y: -60}}
+            onPress={() => console.log('CLICK Marker Call Select Choos')}
+            icon={require('../../assets/icons/Location.png')}
+          />
+        )}
 
         {state.isMapReady && state.position && selectPosition && (
           <Marker.Animated
             onDragEnd={onDragEnd}
-            draggable={true}
+            draggable={waitDep ? false : true}
             coordinate={{
-              latitude: 37.4219821,
-              longitude: -122.0840064,
+              latitude: positionDrag.latitude,
+              longitude: positionDrag.longitude,
               latitudeDelta: 0.045,
               longitudeDelta: 0.045,
             }}
             centerOffset={{x: -18, y: -60}}
             anchor={{x: 0.69, y: 1}}
-            icon={require('../../assets/icons/Depannage.png')}
+            icon={require('../../assets/icons/Vector.png')}
           />
         )}
-        {/* <MapViewDirections
-          origin={{
-            latitude: state.region.latitude,
-            longitude: state.region.longitude,
-          }}
-          destination={{
-            latitude: 37.4213821,
-            longitude: -122.0440064,
-          }}
-          strokeWidth={4}
-          strokeColor="#111111"
-          apikey={GOOGLE_MAPS_APIKEY}
-        /> */}
+        {waitDep && (
+          <MapViewDirections
+            origin={{
+              latitude: positionDrag.latitude,
+              longitude: positionDrag.longitude,
+            }}
+            destination={{
+              latitude: 37.4213821,
+              longitude: -122.0440064,
+            }}
+            strokeWidth={4}
+            strokeColor="#111111"
+            apikey={GOOGLE_MAPS_APIKEY}
+          />
+        )}
       </MapView>
-      <CurrentLocation bottom={HEIGHT * 0.28} cb={centerPosition} />
+      <CurrentLocation
+        bottom={depanneurInLoading ? HEIGHT * 0.34 : HEIGHT * 0.28}
+        cb={centerPosition}
+      />
       <View style={styles.button}>
         {!depanneurInLoading && (
           <ButtonDefault
@@ -300,10 +322,27 @@ export default function Maps({navigation}) {
           />
         )}
         {depanneurInLoading && (
-          <ButtonDefault
-            handleSend={() => console.log('LE depanneur est arriver')}
-            title="Le dépanneur est arrivé"
-          />
+          <>
+            <View style={styles.containerButtonAnnul}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.buttonOulined}
+                onPress={() => setModalAsk(true)}>
+                <Text
+                  style={{
+                    color: Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: '700',
+                  }}>
+                  Annuler
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <ButtonDefault
+              handleSend={() => console.log('LE depanneur est arriver')}
+              title="Le dépanneur est arrivé"
+            />
+          </>
         )}
       </View>
       <Modal
@@ -319,7 +358,7 @@ export default function Maps({navigation}) {
               <Pressable onPress={() => setModalVisible(!modalVisible)}>
                 <Image
                   style={{width: 32, height: 32, resizeMode: 'contain'}}
-                  source={require('../../assets/icons/Location.png')}
+                  source={require('../../assets/icons/cross.png')}
                 />
               </Pressable>
             </View>
@@ -360,6 +399,15 @@ export default function Maps({navigation}) {
           </View>
         </View>
       </Modal>
+      <ModalAsk
+        title="Etes vous sure ?"
+        text="L'annulation est définitive"
+        callBack={ask => {
+          if (ask) handleDeleteDep();
+          setModalAsk(false);
+        }}
+        modal={modalAsk}
+      />
       <ModalDefault
         title="Confirmer de dépannages"
         text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
@@ -398,6 +446,22 @@ export default function Maps({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerButtonAnnul: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginBottom: 10,
+    marginTop: -55,
+  },
+  buttonOulined: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    height: HEIGHT * 0.076,
+    borderRadius: 10,
+    paddingBottom: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backButton: {
     position: 'absolute',

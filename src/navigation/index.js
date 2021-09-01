@@ -77,7 +77,13 @@ const Navigator = ({user}) => {
       }}>
       {!user ? (
         <>
-          <Stack.Screen name="Homelogin" component={Homelogin} />
+          <Stack.Screen
+            options={{
+              header: ({navigation}) => <View></View>,
+            }}
+            name="Homelogin"
+            component={Homelogin}
+          />
           <Stack.Screen name="Signin" component={Signin} />
           <Stack.Screen name="SigninNext" component={SigninNext} />
           <Stack.Screen name="SigninDep" component={SigninDep} />

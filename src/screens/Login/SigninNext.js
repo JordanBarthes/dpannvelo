@@ -44,6 +44,7 @@ export default function SigninNext({route, navigation}) {
     if (
       select.userName.length < 1 ||
       select.name.length < 2 ||
+      select.name.length > 26 ||
       select.firstName.length < 2
     ) {
       return Toast.show({
@@ -171,6 +172,7 @@ export default function SigninNext({route, navigation}) {
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
       <View style={styles.form}>
+        <Toast ref={ref => Toast.setRef(ref)} />
         <View>
           <Input
             textAlign="left"

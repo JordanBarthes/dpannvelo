@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {
   StyleSheet,
@@ -15,9 +15,12 @@ import auth from '@react-native-firebase/auth';
 import {connect, useDispatch} from 'react-redux';
 import Colors from '../../../constants/Colors';
 import {DELETE_USER} from '../../redux/type';
+import ModalDefault from '../../components/Modal/ModalDefault';
+import ModalAsk from '../../components/Modal/ModalAsk';
 
 function Compte({navigation, user}) {
   const dispatch = useDispatch();
+  const [modalAsk, setModalAsk] = useState(false);
 
   const handleSend = () => {
     navigation.navigate('Buy');
@@ -90,7 +93,7 @@ function Compte({navigation, user}) {
 
                   <View>
                     <Image
-                      style={{width: 18, resizeMode: 'contain'}}
+                      style={{width: 18, height: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
@@ -119,7 +122,7 @@ function Compte({navigation, user}) {
             </View>
           </View>
         </View>
-        <View style={{marginTop: 34}}>
+        <View style={{marginTop: 25}}>
           <View style={styles.container}>
             <View>
               <View
@@ -159,7 +162,7 @@ function Compte({navigation, user}) {
                   </View>
                   <View>
                     <Image
-                      style={{width: 18, resizeMode: 'contain'}}
+                      style={{width: 18, height: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
@@ -184,12 +187,6 @@ function Compte({navigation, user}) {
                         {user?.userName ? user.userName : ''}
                       </Text>
                     </View>
-                  </View>
-                  <View>
-                    <Image
-                      style={{width: 18, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/arrowRight.png')}
-                    />
                   </View>
                 </View>
               </Pressable>
@@ -232,7 +229,7 @@ function Compte({navigation, user}) {
                   </View>
                   <View>
                     <Image
-                      style={{width: 18, resizeMode: 'contain'}}
+                      style={{width: 18, height: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
@@ -258,7 +255,7 @@ function Compte({navigation, user}) {
             </View>
           </View>
         </View>
-        <View style={{marginTop: 34}}>
+        <View style={{marginTop: 25}}>
           <View style={styles.container}>
             <View>
               <View
@@ -295,7 +292,7 @@ function Compte({navigation, user}) {
                 </View>
                 <View>
                   <Image
-                    style={{width: 18, resizeMode: 'contain'}}
+                    style={{width: 18, height: 18, resizeMode: 'contain'}}
                     source={require('../../assets/icons/arrowRight.png')}
                   />
                 </View>
@@ -322,7 +319,7 @@ function Compte({navigation, user}) {
                     onPress={() => handleSend()}>
                     <View>
                       <Image
-                        style={{width: 18, resizeMode: 'contain'}}
+                        style={{width: 18, height: 18, resizeMode: 'contain'}}
                         source={require('../../assets/icons/plus.png')}
                       />
                     </View>
@@ -349,7 +346,7 @@ function Compte({navigation, user}) {
                   </View>
                   <View>
                     <Image
-                      style={{width: 18, resizeMode: 'contain'}}
+                      style={{width: 18, height: 18, resizeMode: 'contain'}}
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
@@ -358,9 +355,11 @@ function Compte({navigation, user}) {
             </View>
           </View>
         </View>
-        <View style={{marginTop: 34, marginBottom: 34}}>
-          <TouchableOpacity activeOpacity={0.8} onPress={() => handleDeco()}>
-            <View style={[styles.content, {borderTopWidth: 0}]}>
+        <View style={{marginTop: 25, marginBottom: 25}}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setModalAsk(true)}>
+            <View style={[styles.content, {borderTopWidth: 0, padding: 20}]}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -378,13 +377,22 @@ function Compte({navigation, user}) {
               </View>
               <View>
                 <Image
-                  style={{width: 18, resizeMode: 'contain'}}
+                  style={{width: 18, height: 18, resizeMode: 'contain'}}
                   source={require('../../assets/icons/Logout.png')}
                 />
               </View>
             </View>
           </TouchableOpacity>
         </View>
+        <ModalAsk
+          title="Etes vous sure ?"
+          text="Vous serez déconnecté"
+          callBack={ask => {
+            if (ask) handleDeco();
+            setModalAsk(false);
+          }}
+          modal={modalAsk}
+        />
       </ScrollView>
     </View>
   );
@@ -403,14 +411,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.default,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textModalLoading: {
+    fontSize: 16,
+  },
   content: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: Colors.white,
-    padding: 14,
-    paddingLeft: 30,
-    paddingRight: 30,
+    padding: 12,
+    paddingLeft: 25,
+    paddingRight: 20,
     borderTopColor: Colors.borderGrey,
     borderTopWidth: 1,
   },

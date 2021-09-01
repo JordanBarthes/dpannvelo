@@ -150,8 +150,8 @@ export default function SigninDep({navigation}) {
 
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
-      <Toast ref={ref => Toast.setRef(ref)} />
       <View style={styles.form}>
+        <Toast ref={ref => Toast.setRef(ref)} />
         <Text style={styles.title}>CRÉEZ UN COMPTE DÉPANNEUR</Text>
         <View style={{paddingBottom: 5}}>
           <Input

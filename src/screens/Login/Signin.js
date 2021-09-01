@@ -39,9 +39,8 @@ export default function Signin({navigation}) {
     }
 
     if (
-      select.password &&
-      select.password.length < 8 &&
-      select.password.length <= 16
+      (select.password && select.password.length < 8) ||
+      (select.password && select.password.length > 32)
     ) {
       return Toast.show({
         type: 'error',

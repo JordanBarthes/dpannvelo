@@ -83,9 +83,8 @@ function Payement({navigation, user}) {
 }
 
 const mapStateToProps = (state, props) => {
-  console.log('*****USER LOGIN ******', state);
   return {
-    user: state,
+    user: state.user,
   };
 };
 

@@ -292,12 +292,14 @@ export default function Maps({navigation}) {
               latitude: positionDrag.latitude,
               longitude: positionDrag.longitude,
             }}
+            mode="DRIVING"
+            timePrecision="high"
             destination={{
               latitude: 37.4213821,
               longitude: -122.0440064,
             }}
             strokeWidth={4}
-            strokeColor="#111111"
+            strokeColor="#3CD689"
             apikey={GOOGLE_MAPS_APIKEY}
           />
         )}
@@ -368,7 +370,7 @@ export default function Maps({navigation}) {
                 buttonOulined
                 active={problem === 1}
                 handleSend={() => setProblem(1)}
-                title="Soucis 1"
+                title="Freins"
               />
             </View>
             <View style={styles.buttonOption}>
@@ -376,7 +378,7 @@ export default function Maps({navigation}) {
                 buttonOulined
                 active={problem === 2}
                 handleSend={() => setProblem(2)}
-                title="Soucis 1"
+                title="Pneus"
               />
             </View>
             <View style={styles.buttonOption}>
@@ -384,7 +386,23 @@ export default function Maps({navigation}) {
                 buttonOulined
                 active={problem === 3}
                 handleSend={() => setProblem(3)}
-                title="Soucis 1"
+                title="Vitesses"
+              />
+            </View>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                buttonOulined
+                active={problem === 4}
+                handleSend={() => setProblem(4)}
+                title="Montage d’accessoires"
+              />
+            </View>
+            <View style={styles.buttonOption}>
+              <ButtonDefault
+                buttonOulined
+                active={problem === 5}
+                handleSend={() => setProblem(5)}
+                title="Autres"
               />
             </View>
             <View style={styles.buttonOption}>
@@ -417,7 +435,7 @@ export default function Maps({navigation}) {
       />
       <ModalDefault
         title="Confirmer votre position"
-        text="Deplacer le Marker a votre position puis confirmer"
+        text="Maintenez appuyer sur le Marker pour le deplacer et ensuite confirmer votre position."
         callBack={open => {
           setModalPosition(open);
           setSelectPosition(true);

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import {StyleSheet, View, Text, Image, ActivityIndicator} from 'react-native';
 import {Input, ListItem, Avatar} from 'react-native-elements';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
@@ -18,6 +18,8 @@ export default function SigninNext({route, navigation}) {
   const [selectedFreins, setSelectedFreins] = useState(false);
   const [selectedAir, setSelectedAir] = useState(false);
   const [selectedRoues, setSelectedRoues] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const [loginData, setLoginData] = useState({email: '', password: ''});
@@ -62,7 +64,7 @@ export default function SigninNext({route, navigation}) {
       });
     }
     console.log('User');
-
+    setLoading(true);
     auth()
       .createUserWithEmailAndPassword(loginData.email, loginData.password)
       .then(async token => {
@@ -93,6 +95,7 @@ export default function SigninNext({route, navigation}) {
       })
       .catch(error => {
         console.error(error);
+        setLoading(false);
         if (error.code === 'auth/email-already-in-use') {
           return Toast.show({
             type: 'error',
@@ -371,7 +374,11 @@ export default function SigninNext({route, navigation}) {
             ))}
           </ListItem.Accordion>
         </View>
-        <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+        )}
       </View>
     </ScrollView>
   );

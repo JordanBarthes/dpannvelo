@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, ImageBackground} from 'react-native';
 
 // Dependencies
 import {createStackNavigator} from '@react-navigation/stack';
@@ -49,7 +49,6 @@ const Navigator = ({user}) => {
 
       if (doc.exists) {
         const data = doc.data();
-        console.log('STORE USER', data);
         dispatch({type: GET_USER, payload: data});
       } else {
         auth()
@@ -66,7 +65,17 @@ const Navigator = ({user}) => {
     if (initializing) setInitializing(false);
   }
 
-  if (initializing) return null;
+  if (initializing)
+    return (
+      <ImageBackground
+        resizeMode="stretch"
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+        }}
+        source={require('../assets/icons/initBackground.png')}
+      />
+    );
 
   return (
     <Stack.Navigator

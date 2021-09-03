@@ -62,5 +62,6 @@ const styles = StyleSheet.create({
   buttonOption: {
     width: WIDTH * 0.7,
     marginBottom: 10,
+    marginTop: 20,
   },
 });

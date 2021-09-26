@@ -16,7 +16,10 @@ export default function History({navigation}) {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        style={{
+          marginVertical: 50,
+        }}>
         <View style={styles.content}>
           <View
             style={{

@@ -167,7 +167,7 @@ export default function SigninDep({navigation}) {
   };
 
   return (
-    <ScrollView style={{backgroundColor: Colors.default}}>
+    <ScrollView style={{backgroundColor: Colors.default, paddingVertical: 50}}>
       <View style={{zIndex: 9999}}>
         <Toast ref={ref => Toast.setRef(ref)} />
       </View>
@@ -175,7 +175,7 @@ export default function SigninDep({navigation}) {
       <View style={{paddingBottom: 5}}>
         <Input
           textAlign="left"
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="Doe"
           label="Nom"
           value={select.name}
           labelStyle={{marginBottom: -12, fontSize: 14}}
@@ -186,7 +186,7 @@ export default function SigninDep({navigation}) {
       <View style={{paddingBottom: 5}}>
         <Input
           textAlign="left"
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="John"
           label="Prénom"
           value={select.firstname}
           labelStyle={{marginBottom: -12, fontSize: 14}}
@@ -197,7 +197,7 @@ export default function SigninDep({navigation}) {
       <View style={{paddingBottom: 5}}>
         <Input
           textAlign="left"
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="******@gmail.com"
           label="Email"
           value={select.email}
           labelStyle={{marginBottom: -12, fontSize: 14}}
@@ -208,7 +208,7 @@ export default function SigninDep({navigation}) {
       <View style={{paddingBottom: 5}}>
         <Input
           textAlign="left"
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="******"
           label="Mot de passe"
           value={select.password}
           secureTextEntry={true}
@@ -220,7 +220,7 @@ export default function SigninDep({navigation}) {
       <View style={{paddingBottom: 5}}>
         <Input
           textAlign="left"
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="******"
           label="Confirmer le mot de passe"
           value={select.confirm}
           secureTextEntry={true}
@@ -234,15 +234,18 @@ export default function SigninDep({navigation}) {
       ) : (
         <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
       )}
+      <View style={{marginTop: 20}}>
+        <ButtonDefault
+          buttonOulined
+          handleSend={() => navigation.navigate('Login')}
+          title="Se connecter"
+        />
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-  },
   form: {
     padding: 15,
     marginTop: 70,

@@ -80,8 +80,8 @@ const Navigator = ({user}) => {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerStyle: styles.headerNone,
-        // headerTransparent: true,
+        headerStyle: styles.headerNone,
+        headerTransparent: true,
         headerTitle: '',
       }}>
       {!user ? (
@@ -97,7 +97,13 @@ const Navigator = ({user}) => {
           <Stack.Screen name="SigninNext" component={SigninNext} />
           <Stack.Screen name="SigninDep" component={SigninDep} />
           <Stack.Screen name="SigninNextDep" component={SigninNextDep} />
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen
+            options={{
+              header: ({navigation}) => <View></View>,
+            }}
+            name="Login"
+            component={Login}
+          />
         </>
       ) : (
         <>

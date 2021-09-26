@@ -106,22 +106,22 @@ function Login({navigation}) {
         style={styles.image}
       />
       <View style={styles.containerLogin}>
+        <View style={{marginLeft: 10, marginTop: 10}}>
+          <Text style={{color: Colors.BLACK, fontSize: 18, marginBottom: 5}}>
+            BIENVENUE SUR DEPANNEVELO !
+          </Text>
+          <Text style={{color: Colors.grey, marginBottom: 12}}>
+            Connecte toi pour continuer
+          </Text>
+        </View>
         <ScrollView>
-          <View style={{marginLeft: 10, marginTop: 20}}>
-            <Text style={{color: Colors.BLACK, fontSize: 18, marginBottom: 10}}>
-              BIENVENUE SUR DEPANNEVELO !
-            </Text>
-            <Text style={{color: Colors.grey, marginBottom: 15}}>
-              Connecte toi pour continuer
-            </Text>
-          </View>
           <View style={styles.form}>
             <Input
               style={{fontSize: 14}}
               label="Email"
               labelStyle={{fontSize: 12, marginBottom: -10, marginLeft: 4}}
               textAlign="left"
-              placeholder="jordanprofree@gmail.com"
+              placeholder="*****@gmail.com"
               value={select.email}
               onChangeText={email => setSelect({...select, email})}
             />
@@ -141,7 +141,7 @@ function Login({navigation}) {
             ) : (
               <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
             )}
-            <View style={{marginTop: 10, marginBottom: 30}}>
+            <View style={{marginTop: 5, marginBottom: 10}}>
               <Text style={{textAlign: 'center', color: Colors.grey}}>
                 Mot de passe oublié ?
               </Text>

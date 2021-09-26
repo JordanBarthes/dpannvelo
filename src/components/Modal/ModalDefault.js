@@ -5,11 +5,11 @@ import ButtonDefault from '../Button/ButtonDefault';
 
 const WIDTH = Dimensions.get('window').width;
 
-const ModalDefault = ({title, text, callBack, modal}) => {
+const ModalDefault = ({title, text, callBack, modal, encour = false}) => {
   return (
     <Modal
       animationType="slide"
-      transparent={true}
+      transparent={encour ? false : true}
       visible={modal}
       onRequestClose={() => {
         callBack(!modal);

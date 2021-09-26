@@ -66,6 +66,8 @@ export default function Maps({navigation}) {
 
   const [problem, setProblem] = useState(null);
 
+  const [endDep, setEndDep] = useState(false);
+
   let map;
   let deleteAsync = false;
   let positionDrag = {
@@ -81,7 +83,6 @@ export default function Maps({navigation}) {
   }, [state.isMapReady]);
 
   const searchDepanneur = position => {
-    console.log('****** POSITION VALIDE SEARCH DEPANNEUR *****', positionDrag);
     setTimeout(() => {
       setModalSearchDep(false);
       setDepanneurInLoading(true);
@@ -89,7 +90,6 @@ export default function Maps({navigation}) {
   };
 
   const handleDeleteDep = () => {
-    console.log('DELETE DEPANNAGE EN COURS');
     setWaitDep(false);
     setDepanneurInLoading(false);
     setSelectPosition(false);
@@ -154,6 +154,12 @@ export default function Maps({navigation}) {
         },
       );
     }
+  };
+
+  const handlePayement = () => {
+    console.log('PAYEMENT VALIDER');
+    setEndDep(true);
+    setDepanneurInLoading(false);
   };
 
   const centerPosition = () => {
@@ -293,7 +299,7 @@ export default function Maps({navigation}) {
               longitude: positionDrag.longitude,
             }}
             mode="DRIVING"
-            timePrecision="high"
+            // timePrecision="high"
             destination={{
               latitude: 37.4213821,
               longitude: -122.0440064,
@@ -341,7 +347,7 @@ export default function Maps({navigation}) {
               </TouchableOpacity>
             </View>
             <ButtonDefault
-              handleSend={() => console.log('LE depanneur est arriver')}
+              handleSend={() => handlePayement()}
               title="Le dépanneur est arrivé"
             />
           </>
@@ -425,6 +431,13 @@ export default function Maps({navigation}) {
           setModalAsk(false);
         }}
         modal={modalAsk}
+      />
+      <ModalDefault
+        title="Depannage en cours"
+        text="Le depannage est en cours nous attendons la validation du depanneur"
+        callBack={end => setEndDep(end)}
+        encour
+        modal={endDep}
       />
       <ModalDefault
         title="Confirmer de dépannages"

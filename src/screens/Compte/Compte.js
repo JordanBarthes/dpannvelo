@@ -41,7 +41,10 @@ function Compte({navigation, user}) {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        style={{
+          marginVertical: 30,
+        }}>
         <View style={{marginTop: 20}}>
           <View style={styles.container}>
             <View>

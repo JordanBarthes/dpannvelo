@@ -89,7 +89,7 @@ export default function Signin({navigation}) {
         <View style={{paddingBottom: 5}}>
           <Input
             textAlign="left"
-            placeholder="jordanprofree@gmail.com"
+            placeholder="*****@gmail.com"
             label="Email"
             labelStyle={{marginBottom: -12, fontSize: 14}}
             inputStyle={{marginBottom: -5}}

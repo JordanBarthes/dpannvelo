@@ -21,7 +21,7 @@ import {GET_USER, DELETE_USER} from '../../redux/type';
 
 function Payement({navigation, user}) {
   const [select, setSelect] = useState({
-    firstName: user.firstname,
+    firstName: user.firstName,
     name: user.name,
   });
   const [loading, setLoading] = useState(false);

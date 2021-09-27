@@ -72,7 +72,7 @@ function ModifPass({navigation, user}) {
   return (
     <View style={styles.container}>
       <Toast ref={ref => Toast.setRef(ref)} />
-      <ScrollView>
+      <ScrollView style={{marginTop: 50}}>
         <View style={styles.form}>
           <Input
             style={{fontSize: 14}}
@@ -83,11 +83,13 @@ function ModifPass({navigation, user}) {
             value={email}
             onChangeText={email => setEmail(email)}
           />
-          {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : (
-            <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
-          )}
+          <View style={{marginTop: 30}}>
+            {loading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -115,5 +117,7 @@ const styles = StyleSheet.create({
   form: {
     height: HEIGHT - 180,
     paddingHorizontal: 10,
+    display: 'flex',
+    justifyContent: 'center',
   },
 });

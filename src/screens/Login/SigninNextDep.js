@@ -115,7 +115,7 @@ export default function SigninNextDep({route, navigation}) {
       await firestore().collection('users').doc(user.id).set({
         id: user.id,
         email: user.email,
-        firstname: user.firstname,
+        firstname: user.firstName,
         name: user.name,
         civ,
         cir,

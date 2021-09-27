@@ -20,7 +20,7 @@ export default function SigninDep({navigation}) {
     email: '',
     password: '',
     confirm: '',
-    firstname: '',
+    firstName: '',
     name: '',
   });
   const [loading, setLoading] = useState(false);
@@ -35,8 +35,8 @@ export default function SigninDep({navigation}) {
 
   const onSubmit = () => {
     if (
-      select?.firstname.length < 3 ||
-      select?.firstname.length >= 24 ||
+      select?.firstName.length < 3 ||
+      select?.firstName.length >= 24 ||
       select?.name.length < 3 ||
       select?.name.length >= 24
     ) {
@@ -188,10 +188,10 @@ export default function SigninDep({navigation}) {
           textAlign="left"
           placeholder="John"
           label="Prénom"
-          value={select.firstname}
+          value={select.firstName}
           labelStyle={{marginBottom: -12, fontSize: 14}}
           inputStyle={{marginBottom: -5}}
-          onChangeText={firstname => setSelect({...select, firstname})}
+          onChangeText={firstName => setSelect({...select, firstName})}
         />
       </View>
       <View style={{paddingBottom: 5}}>

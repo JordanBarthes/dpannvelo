@@ -42,7 +42,6 @@ export default function SigninNext({route, navigation}) {
   });
 
   const onSubmit = () => {
-    console.log('UserSubmit');
     if (
       select.userName.length < 1 ||
       select.name.length < 2 ||
@@ -63,7 +62,6 @@ export default function SigninNext({route, navigation}) {
         onPress: () => {},
       });
     }
-    console.log('User');
     setLoading(true);
     auth()
       .createUserWithEmailAndPassword(loginData.email, loginData.password)
@@ -138,44 +136,40 @@ export default function SigninNext({route, navigation}) {
       name: 'Type de vélo',
       subtitle: 'Sélectionner',
       choice: [
-        {label: 'Football', value: 'football'},
-        {label: 'Baseball', value: 'baseball'},
-        {label: 'Hockey', value: 'hockey'},
+        {label: 'Ville', value: 'ville'},
+        {label: 'VTT', value: 'vtt'},
       ],
     },
     {
       name: 'Type de freins',
       subtitle: 'Sélectionner',
       choice: [
-        {label: 'Football', value: 'football'},
-        {label: 'Baseball', value: 'baseball'},
-        {label: 'Hockey', value: 'hockey'},
+        {label: 'Disque', value: 'disque'},
+        {label: 'Platine', value: 'platine'},
       ],
     },
     {
       name: 'Taille de chambre à air',
       subtitle: 'Sélectionner',
       choice: [
-        {label: 'Football', value: 'football'},
-        {label: 'Baseball', value: 'baseball'},
-        {label: 'Hockey', value: 'hockey'},
+        {label: 'Lent', value: 'lent'},
+        {label: 'Rapide', value: 'rapide'},
       ],
     },
     {
       name: 'Type de roues',
       subtitle: 'Sélectionner',
       choice: [
-        {label: 'Football', value: 'football'},
-        {label: 'Baseball', value: 'baseball'},
-        {label: 'Hockey', value: 'hockey'},
+        {label: 'Large', value: 'large'},
+        {label: 'Fin', value: 'fin'},
       ],
     },
   ];
 
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
+      <Toast ref={ref => Toast.setRef(ref)} />
       <View style={styles.form}>
-        <Toast ref={ref => Toast.setRef(ref)} />
         <View>
           <Input
             textAlign="left"
@@ -385,5 +379,11 @@ export default function SigninNext({route, navigation}) {
 }
 
 const styles = StyleSheet.create({
-  form: {padding: 20, marginTop: 50, maxHeight: 1200, marginBottom: 30},
+  form: {
+    padding: 20,
+    marginTop: 30,
+    maxHeight: 1200,
+    marginBottom: 30,
+    zIndex: -999,
+  },
 });

@@ -159,7 +159,7 @@ function Compte({navigation, user}) {
                         Nom complet
                       </Text>
                       <Text style={{marginTop: 2, color: Colors.grey}}>
-                        {user?.firstname} {user?.name}
+                        {user?.firstName} {user?.name}
                       </Text>
                     </View>
                   </View>
@@ -171,28 +171,26 @@ function Compte({navigation, user}) {
                   </View>
                 </View>
               </Pressable>
-              <Pressable onPress={() => navigation.navigate('ModifNom')}>
-                <View style={styles.content}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                    }}>
-                    <View style={{justifyContent: 'center'}}>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          color: Colors.black,
-                        }}>
-                        Pseudo
-                      </Text>
-                      <Text style={{marginTop: 2, color: Colors.grey}}>
-                        {user?.userName ? user.userName : ''}
-                      </Text>
-                    </View>
+              <View style={styles.content}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                      }}>
+                      Pseudo
+                    </Text>
+                    <Text style={{marginTop: 2, color: Colors.grey}}>
+                      {user?.userName ? user.userName : ''}
+                    </Text>
                   </View>
                 </View>
-              </Pressable>
+              </View>
               <View style={styles.content}>
                 <View
                   style={{

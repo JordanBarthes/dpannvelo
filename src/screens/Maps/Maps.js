@@ -157,9 +157,10 @@ export default function Maps({navigation}) {
   };
 
   const handlePayement = () => {
-    console.log('PAYEMENT VALIDER');
     setEndDep(true);
     setDepanneurInLoading(false);
+    setWaitDep(false);
+    setSelectPosition(false);
   };
 
   const centerPosition = () => {

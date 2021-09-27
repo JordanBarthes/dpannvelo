@@ -26,7 +26,7 @@ const HEIGHT = Dimensions.get('window').height;
 
 function ModifNom({navigation, user}) {
   const [select, setSelect] = useState({
-    firstName: user.firstname,
+    firstName: user.firstName,
     name: user.name,
   });
   const [loading, setLoading] = useState(false);

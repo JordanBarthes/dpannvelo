@@ -55,7 +55,7 @@ function Abonnement({navigation}) {
                     color: Colors.black,
                     fontWeight: '700',
                   }}>
-                  Abbonenemnt1
+                  Annuel
                 </Text>
                 <Text
                   style={{
@@ -68,10 +68,10 @@ function Abonnement({navigation}) {
               </View>
             </View>
             <Text style={{marginTop: 2, color: Colors.grey}}>
-              2 depannage par an
+              Deux dépannages complets*
             </Text>
             <Text style={{marginTop: 2, color: Colors.grey}}>
-              2 depannage par an
+              Révision à la date anniversaire
             </Text>
           </View>
           <ButtonDefault
@@ -104,7 +104,7 @@ function Abonnement({navigation}) {
                     color: Colors.black,
                     fontWeight: '700',
                   }}>
-                  Abbonenemnt2
+                  Semestriel
                 </Text>
                 <Text
                   style={{
@@ -112,19 +112,71 @@ function Abonnement({navigation}) {
                     color: Colors.green,
                     fontWeight: '700',
                   }}>
-                  20€/an
+                  40€/semestre
                 </Text>
               </View>
             </View>
             <Text style={{marginTop: 2, color: Colors.grey}}>
-              2 depannage par an
+              Un dépannage complet*
             </Text>
             <Text style={{marginTop: 2, color: Colors.grey}}>
-              2 depannage par an
+              Check Sécurité à la date anniversaire
+            </Text>
+          </View>
+          <ButtonDefault
+            title="Actif"
+            disable
+            handleSend={() => handleChoice('1')}
+          />
+        </View>
+        <View style={styles.content}>
+          <View style={styles.padding}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+              }}>
+              <View
+                style={{
+                  paddingTop: 10,
+                  marginRight: 15,
+                }}>
+                <Image
+                  style={{width: 24, height: 24, resizeMode: 'contain'}}
+                  source={require('../../assets/icons/abonnement1.png')}
+                />
+              </View>
+              <View style={{justifyContent: 'center'}}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: '700',
+                  }}>
+                  Mensuel
+                </Text>
+                <Text
+                  style={{
+                    marginTop: 2,
+                    color: Colors.green,
+                    fontWeight: '700',
+                  }}>
+                  21€/mois
+                </Text>
+              </View>
+            </View>
+            <Text style={{marginTop: 2, color: Colors.grey}}>
+              Un dépannage complet*
+            </Text>
+            <Text style={{marginTop: 2, color: Colors.grey}}>
+              chaque dépannage lance un nouveau contrat
             </Text>
           </View>
           <ButtonDefault title="Choisir" handleSend={() => handleChoice('2')} />
         </View>
+        <Text style={{marginTop: -12, color: Colors.grey}}>
+          * déplacement, petite pièce et main d'œuvre
+        </Text>
       </ScrollView>
       <ModalDefault
         title="Confirmer de dépannages"

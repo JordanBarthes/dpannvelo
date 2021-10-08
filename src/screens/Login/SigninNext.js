@@ -5,6 +5,7 @@ import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import {ScrollView} from 'react-native-gesture-handler';
 import arrow_down from '../../assets/icons/arrow_down.png';
+import RNPickerSelect from 'react-native-picker-select';
 
 import Toast from 'react-native-toast-message';
 
@@ -12,13 +13,9 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
 import {GET_USER} from '../../redux/type';
+import {ABO_INACTIF, TYPE_USER} from '../../locale';
 
 export default function SigninNext({route, navigation}) {
-  const [selectedVelo, setSelectedVelo] = useState(false);
-  const [selectedFreins, setSelectedFreins] = useState(false);
-  const [selectedAir, setSelectedAir] = useState(false);
-  const [selectedRoues, setSelectedRoues] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -75,6 +72,8 @@ export default function SigninNext({route, navigation}) {
             .set({
               id: token.user.uid,
               email: token.user.email,
+              abonnement: ABO_INACTIF,
+              type: TYPE_USER,
               ...select,
             });
 
@@ -83,6 +82,8 @@ export default function SigninNext({route, navigation}) {
             payload: {
               id: token.user.uid,
               email: token.user.email,
+              abonnement: ABO_INACTIF,
+              type: TYPE_USER,
               ...select,
             },
           });
@@ -126,45 +127,26 @@ export default function SigninNext({route, navigation}) {
       });
   };
 
-  const listFreins = [
-    {name: 'Football', subtitle: 'football'},
-    {name: 'Baseball', subtitle: 'baseball'},
-    {name: 'Hockey', subtitle: 'hockey'},
-  ];
-  const list = [
-    {
-      name: 'Type de vélo',
-      subtitle: 'Sélectionner',
-      choice: [
-        {label: 'Ville', value: 'ville'},
-        {label: 'VTT', value: 'vtt'},
-      ],
-    },
-    {
-      name: 'Type de freins',
-      subtitle: 'Sélectionner',
-      choice: [
-        {label: 'Disque', value: 'disque'},
-        {label: 'Platine', value: 'platine'},
-      ],
-    },
-    {
-      name: 'Taille de chambre à air',
-      subtitle: 'Sélectionner',
-      choice: [
-        {label: 'Lent', value: 'lent'},
-        {label: 'Rapide', value: 'rapide'},
-      ],
-    },
-    {
-      name: 'Type de roues',
-      subtitle: 'Sélectionner',
-      choice: [
-        {label: 'Large', value: 'large'},
-        {label: 'Fin', value: 'fin'},
-      ],
-    },
-  ];
+  const placeholderV = {
+    label: 'Type de vélo',
+    value: null,
+    color: 'black',
+  };
+  const placeholderF = {
+    label: 'Type de freins',
+    value: null,
+    color: 'black',
+  };
+  const placeholderA = {
+    label: 'Type de chambre a air',
+    value: null,
+    color: 'black',
+  };
+  const placeholderR = {
+    label: 'Type de roue',
+    value: null,
+    color: 'black',
+  };
 
   return (
     <ScrollView style={{backgroundColor: Colors.default}}>
@@ -204,169 +186,60 @@ export default function SigninNext({route, navigation}) {
           />
         </View>
         <View style={{marginBottom: 15}}>
-          <ListItem.Accordion
-            noIcon={true}
-            // containerStyle={{backgroundColor: Colors.blueLight}}
-            content={
-              <>
-                <ListItem.Content
-                  style={{
-                    paddingBottom: -25,
-                    paddingLeft: 10,
-                    paddingTop: 10,
-                    margin: -15,
-                  }}>
-                  <ListItem.Title>Type de vélo</ListItem.Title>
-                  <ListItem.Subtitle>{select.velo}</ListItem.Subtitle>
-                </ListItem.Content>
-              </>
-            }
-            isExpanded={selectedVelo}
-            onPress={() => {
-              setSelectedAir(false);
-              setSelectedRoues(false);
-              setSelectedFreins(false);
-              setSelectedVelo(!selectedVelo);
-            }}>
-            {listFreins.map((l, i) => (
-              <ListItem
-                key={i}
-                onPress={() => {
-                  setSelectedVelo(!selectedVelo);
-                  setSelect({...select, velo: l.name});
-                }}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>{l.name}</ListItem.Title>
-                  <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))}
-          </ListItem.Accordion>
+          <RNPickerSelect
+            placeholder={placeholderV}
+            style={pickerSelectStyles}
+            onValueChange={value => {
+              setSelect({...select, velo: value});
+            }}
+            value={select.velo}
+            items={[
+              {label: 'Ville', value: 'ville'},
+              {label: 'VTT', value: 'vtt'},
+            ]}
+          />
         </View>
         <View style={{marginBottom: 15}}>
-          <ListItem.Accordion
-            noIcon={true}
-            // containerStyle={{backgroundColor: Colors.blueLight}}
-            content={
-              <>
-                <ListItem.Content
-                  style={{
-                    paddingLeft: 10,
-                    margin: -15,
-                    marginBottom: -15,
-                  }}>
-                  <ListItem.Title>Type de freins</ListItem.Title>
-                  <ListItem.Subtitle>{select.freins}</ListItem.Subtitle>
-                </ListItem.Content>
-                <Avatar src={arrow_down}></Avatar>
-              </>
-            }
-            isExpanded={selectedFreins}
-            onPress={() => {
-              setSelectedAir(false);
-              setSelectedRoues(false);
-              setSelectedVelo(false);
-              setSelectedFreins(!selectedFreins);
-            }}>
-            {listFreins.map((l, i) => (
-              <ListItem
-                key={i}
-                onPress={() => {
-                  setSelectedFreins(!selectedFreins);
-                  setSelect({...select, freins: l.name});
-                }}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>{l.name}</ListItem.Title>
-                  <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))}
-          </ListItem.Accordion>
+          <RNPickerSelect
+            placeholder={placeholderF}
+            style={pickerSelectStyles}
+            onValueChange={value => {
+              setSelect({...select, freins: value});
+            }}
+            value={select.freins}
+            items={[
+              {label: 'Disque', value: 'disque'},
+              {label: 'Platine', value: 'platine'},
+            ]}
+          />
         </View>
         <View style={{marginBottom: 15}}>
-          <ListItem.Accordion
-            noIcon={true}
-            // containerStyle={{backgroundColor: Colors.blueLight}}
-            content={
-              <>
-                <ListItem.Content
-                  style={{
-                    paddingBottom: -25,
-                    paddingLeft: 10,
-                    paddingTop: 10,
-                    margin: -15,
-                  }}>
-                  <ListItem.Title>Type de chambre a aire</ListItem.Title>
-                  <ListItem.Subtitle>{select.air}</ListItem.Subtitle>
-                </ListItem.Content>
-              </>
-            }
-            isExpanded={selectedAir}
-            onPress={() => {
-              setSelectedRoues(false);
-              setSelectedFreins(false);
-              setSelectedVelo(false);
-              setSelectedAir(!selectedAir);
-            }}>
-            {listFreins.map((l, i) => (
-              <ListItem
-                key={i}
-                onPress={() => {
-                  setSelectedAir(!selectedAir);
-                  setSelect({...select, air: l.name});
-                }}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>{l.name}</ListItem.Title>
-                  <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))}
-          </ListItem.Accordion>
+          <RNPickerSelect
+            placeholder={placeholderA}
+            style={pickerSelectStyles}
+            onValueChange={value => {
+              setSelect({...select, air: value});
+            }}
+            value={select.air}
+            items={[
+              {label: 'Lent', value: 'lent'},
+              {label: 'Rapide', value: 'rapide'},
+            ]}
+          />
         </View>
-
         <View style={{marginBottom: 30}}>
-          <ListItem.Accordion
-            noIcon={true}
-            // containerStyle={{backgroundColor: Colors.blueLight}}
-            content={
-              <>
-                <ListItem.Content
-                  style={{
-                    paddingBottom: -25,
-                    paddingLeft: 10,
-                    paddingTop: 10,
-                    margin: -15,
-                  }}>
-                  <ListItem.Title>Type de roues</ListItem.Title>
-                  <ListItem.Subtitle>{select.roues}</ListItem.Subtitle>
-                </ListItem.Content>
-              </>
-            }
-            isExpanded={selectedRoues}
-            onPress={() => {
-              setSelectedAir(false);
-              setSelectedVelo(false);
-              setSelectedFreins(false);
-              setSelectedRoues(!selectedRoues);
-            }}>
-            {listFreins.map((l, i) => (
-              <ListItem
-                key={i}
-                onPress={() => {
-                  setSelectedRoues(!selectedRoues);
-                  setSelect({...select, roues: l.name});
-                }}
-                bottomDivider>
-                <ListItem.Content>
-                  <ListItem.Title>{l.name}</ListItem.Title>
-                  <ListItem.Subtitle>{l.subtitle}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            ))}
-          </ListItem.Accordion>
+          <RNPickerSelect
+            placeholder={placeholderR}
+            style={pickerSelectStyles}
+            onValueChange={value => {
+              setSelect({...select, roues: value});
+            }}
+            value={select.roues}
+            items={[
+              {label: 'Large', value: 'large'},
+              {label: 'Fin', value: 'fin'},
+            ]}
+          />
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
@@ -385,5 +258,28 @@ const styles = StyleSheet.create({
     maxHeight: 1200,
     marginBottom: 30,
     zIndex: -999,
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });

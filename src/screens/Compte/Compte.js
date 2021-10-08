@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import RNPickerSelect from 'react-native-picker-select';
 
 import {
   StyleSheet,
@@ -17,14 +18,12 @@ import Colors from '../../../constants/Colors';
 import {DELETE_USER} from '../../redux/type';
 import ModalDefault from '../../components/Modal/ModalDefault';
 import ModalAsk from '../../components/Modal/ModalAsk';
+import {TYPE_DEP, TYPE_USER} from '../../locale';
 
 function Compte({navigation, user}) {
   const dispatch = useDispatch();
   const [modalAsk, setModalAsk] = useState(false);
-
-  const handleSend = () => {
-    navigation.navigate('Buy');
-  };
+  const [creneau, setCreneau] = useState();
 
   const handleDeco = () => {
     auth()
@@ -32,11 +31,17 @@ function Compte({navigation, user}) {
       .then(() => {
         dispatch({type: DELETE_USER});
 
-        navigation.navigate('Homelogin');
+        navigation.navigate('Login');
       })
       .catch(() => {
         dispatch({type: DELETE_USER});
       });
+  };
+
+  const placeholder = {
+    label: 'Choisissez un créneau',
+    value: null,
+    color: 'black',
   };
 
   return (
@@ -45,41 +50,74 @@ function Compte({navigation, user}) {
         style={{
           marginVertical: 30,
         }}>
-        <View style={{marginTop: 20}}>
-          <View style={styles.container}>
-            <View>
-              <View
-                style={{
-                  paddingLeft: 30,
-                  paddingBottom: 20,
-                }}>
-                <Text
+        {user?.type === TYPE_USER && (
+          <View style={{marginTop: 20}}>
+            <View style={styles.container}>
+              <View>
+                <View
                   style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: Colors.grey,
+                    paddingLeft: 30,
+                    paddingBottom: 20,
                   }}>
-                  Abonnement
-                </Text>
-              </View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: Colors.grey,
+                    }}>
+                    Abonnement
+                  </Text>
+                </View>
 
-              <Pressable onPress={() => navigation.navigate('Abonnement')}>
+                <Pressable onPress={() => navigation.navigate('Abonnement')}>
+                  <View style={styles.content}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                      }}>
+                      <View
+                        style={{
+                          paddingTop: 10,
+                          marginRight: 15,
+                        }}>
+                        <Image
+                          style={{
+                            width: 24,
+                            height: 24,
+                            resizeMode: 'contain',
+                          }}
+                          source={require('../../assets/icons/abonnement1.png')}
+                        />
+                      </View>
+                      <View style={{justifyContent: 'center'}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: Colors.black,
+                          }}>
+                          Type d'abonnement
+                        </Text>
+                        <Text style={{marginTop: 2, color: Colors.grey}}>
+                          {user?.abonnement ? user.abonnement : ''}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View>
+                      <Image
+                        style={{width: 18, height: 18, resizeMode: 'contain'}}
+                        source={require('../../assets/icons/arrowRight.png')}
+                      />
+                    </View>
+                  </View>
+                </Pressable>
                 <View style={styles.content}>
                   <View
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'flex-start',
                     }}>
-                    <View
-                      style={{
-                        paddingTop: 10,
-                        marginRight: 15,
-                      }}>
-                      <Image
-                        style={{width: 24, height: 24, resizeMode: 'contain'}}
-                        source={require('../../assets/icons/abonnement1.png')}
-                      />
-                    </View>
                     <View style={{justifyContent: 'center'}}>
                       <Text
                         style={{
@@ -89,42 +127,15 @@ function Compte({navigation, user}) {
                         Type d'abonnement
                       </Text>
                       <Text style={{marginTop: 2, color: Colors.grey}}>
-                        Premium
+                        {user?.typeAbonnement ? user.typeAbonnement : ''}
                       </Text>
                     </View>
-                  </View>
-
-                  <View>
-                    <Image
-                      style={{width: 18, height: 18, resizeMode: 'contain'}}
-                      source={require('../../assets/icons/arrowRight.png')}
-                    />
-                  </View>
-                </View>
-              </Pressable>
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Type d'abonnement
-                    </Text>
-                    <Text style={{marginTop: 2, color: Colors.grey}}>
-                      Premium
-                    </Text>
                   </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
+        )}
         <View style={{marginTop: 25}}>
           <View style={styles.container}>
             <View>
@@ -236,99 +247,104 @@ function Compte({navigation, user}) {
                   </View>
                 </View>
               </Pressable>
-              {/* <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
+              {user?.type === TYPE_USER && (
+                <Pressable onPress={() => navigation.navigate('History')}>
+                  <View style={styles.content}>
+                    <View
                       style={{
-                        fontSize: 15,
-                        color: Colors.black,
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
                       }}>
-                      Notification push
-                    </Text>
-                  </View>
-                </View>
-              </View> */}
-            </View>
-          </View>
-        </View>
-        <View style={{marginTop: 25}}>
-          <View style={styles.container}>
-            <View>
-              <View
-                style={{
-                  paddingLeft: 30,
-                  paddingBottom: 20,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: Colors.grey,
-                  }}>
-                  Informations de payements
-                </Text>
-              </View>
-
-              <View style={styles.content}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={{justifyContent: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: Colors.black,
-                      }}>
-                      Solde du compte
-                    </Text>
-                    <Text style={{marginTop: 2, color: Colors.grey}}>10€</Text>
-                  </View>
-                </View>
-                <View>
-                  <Image
-                    style={{width: 18, height: 18, resizeMode: 'contain'}}
-                    source={require('../../assets/icons/arrowRight.png')}
-                  />
-                </View>
-              </View>
-              <Pressable onPress={() => navigation.navigate('Payement')}>
-                <View style={styles.content}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                    }}>
-                    <View style={{justifyContent: 'center'}}>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          color: Colors.green,
-                        }}>
-                        Approvisionner le solde
-                      </Text>
+                      <View style={{justifyContent: 'center'}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: Colors.black,
+                          }}>
+                          Voir l'historique des dépannages
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => handleSend()}>
                     <View>
                       <Image
                         style={{width: 18, height: 18, resizeMode: 'contain'}}
-                        source={require('../../assets/icons/plus.png')}
+                        source={require('../../assets/icons/arrowRight.png')}
                       />
                     </View>
-                  </TouchableOpacity>
+                  </View>
+                </Pressable>
+              )}
+            </View>
+          </View>
+        </View>
+        {user?.type === TYPE_DEP && (
+          <View style={{marginTop: 25}}>
+            <View style={styles.container}>
+              <View>
+                <View
+                  style={{
+                    paddingLeft: 30,
+                    paddingBottom: 20,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: Colors.grey,
+                    }}>
+                    Disponibilités
+                  </Text>
                 </View>
-              </Pressable>
-
-              <Pressable onPress={() => navigation.navigate('History')}>
+                <View style={styles.content}>
+                  <View style={{width: '100%'}}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: Colors.black,
+                      }}>
+                      Créneau horaire
+                    </Text>
+                    <RNPickerSelect
+                      placeholder={placeholder}
+                      style={pickerSelectStyles}
+                      onValueChange={value => {
+                        setCreneau(value);
+                      }}
+                      value={creneau}
+                      items={[
+                        {
+                          label: '7H/10H',
+                          value: '7/10',
+                        },
+                        {label: '10H/12H', value: '10/12'},
+                        {label: '14H/17H', value: '14/17'},
+                      ]}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+        {/* {user?.type === TYPE_USER ? (
+          <View style={{marginTop: 25}}>
+            <View style={styles.container}>
+              <View>
+                <View
+                  style={{
+                    paddingLeft: 30,
+                    paddingBottom: 20,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: Colors.grey,
+                    }}>
+                    Informations de payements
+                  </Text>
+                </View> */}
+        {/*
                 <View style={styles.content}>
                   <View
                     style={{
@@ -341,7 +357,113 @@ function Compte({navigation, user}) {
                           fontSize: 15,
                           color: Colors.black,
                         }}>
-                        Voir l'historique des dépannages
+                        Solde du compte
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        10€
+                      </Text>
+                    </View>
+                  </View>
+                  <View>
+                    <Image
+                      style={{width: 18, height: 18, resizeMode: 'contain'}}
+                      source={require('../../assets/icons/arrowRight.png')}
+                    />
+                  </View>
+                </View> */}
+        {/* <Pressable onPress={() => navigation.navigate('Payement')}>
+                  <View style={styles.content}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                      }}>
+                      <View style={{justifyContent: 'center'}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: Colors.green,
+                          }}>
+                          Approvisionner le solde
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() => handleSend()}>
+                      <View>
+                        <Image
+                          style={{width: 18, height: 18, resizeMode: 'contain'}}
+                          source={require('../../assets/icons/plus.png')}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </Pressable> */}
+        {/* <Pressable onPress={() => navigation.navigate('History')}>
+                  <View style={styles.content}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                      }}>
+                      <View style={{justifyContent: 'center'}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: Colors.black,
+                          }}>
+                          Voir l'historique des dépannages
+                        </Text>
+                      </View>
+                    </View>
+                    <View>
+                      <Image
+                        style={{width: 18, height: 18, resizeMode: 'contain'}}
+                        source={require('../../assets/icons/arrowRight.png')}
+                      />
+                    </View>
+                  </View>
+                </Pressable> */}
+        {/* </View>
+            </View>
+          </View>
+        ) : ( */}
+        {user?.type === TYPE_DEP && (
+          <View style={{marginTop: 25}}>
+            <View style={styles.container}>
+              <View>
+                <View
+                  style={{
+                    paddingLeft: 30,
+                    paddingBottom: 20,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: Colors.grey,
+                    }}>
+                    Paiements/Factures
+                  </Text>
+                </View>
+
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Solde du compte
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        10€
                       </Text>
                     </View>
                   </View>
@@ -352,10 +474,36 @@ function Compte({navigation, user}) {
                     />
                   </View>
                 </View>
-              </Pressable>
+
+                <Pressable onPress={() => navigation.navigate('History')}>
+                  <View style={styles.content}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                      }}>
+                      <View style={{justifyContent: 'center'}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: Colors.black,
+                          }}>
+                          Voir mes factures
+                        </Text>
+                      </View>
+                    </View>
+                    <View>
+                      <Image
+                        style={{width: 18, height: 18, resizeMode: 'contain'}}
+                        source={require('../../assets/icons/arrowRight.png')}
+                      />
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
+        )}
         <View style={{marginTop: 25, marginBottom: 25}}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -406,6 +554,29 @@ const mapStateToProps = (state, props) => {
 };
 
 export default connect(mapStateToProps)(Compte);
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -1,0 +1,6 @@
+const TYPE_USER = 'USER';
+const TYPE_DEP = 'DEP';
+const ABO_INACTIF = 'ABO_INACTIF';
+const ABO_ACTIF = 'ABO_ACTIF';
+
+export {TYPE_DEP, TYPE_USER, ABO_INACTIF, ABO_ACTIF};

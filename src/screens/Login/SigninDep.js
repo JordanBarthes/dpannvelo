@@ -113,30 +113,20 @@ export default function SigninDep({navigation}) {
     auth()
       .createUserWithEmailAndPassword(select.email, select.password)
       .then(async token => {
-        console.log('User account created & signed in!');
+        console.log('DEPANNEUR account created & signed in!');
 
-        // try {
-        //   await firestore()
-        //     .collection('users')
-        //     .doc(token.user.uid)
-        //     .set({
-        //       id: token.user.uid,
-        //       email: token.user.email,
-        //       ...select,
-        //     });
-
-        return navigation.navigate('SigninNextDep', {
-          user: {
-            id: token.user.uid,
-            email: token.user.email,
-            ...select,
-          },
-        });
-        // } catch (err) {
-        //   setLoading(false);
-        //   console.error(err);
-        //   throw err;
-        // }
+        try {
+          return navigation.navigate('SigninNextDep', {
+            user: {
+              id: token.user.uid,
+              email: token.user.email,
+              ...select,
+            },
+          });
+        } catch (err) {
+          setLoading(false);
+          console.error(err);
+        }
       })
       .catch(error => {
         setLoading(false);
@@ -148,13 +138,11 @@ export default function SigninDep({navigation}) {
           console.log('That email address is invalid!');
         }
 
-        console.error(error);
-
         return Toast.show({
           type: 'error',
           // position: 'bottom',
           text1: 'Error',
-          text2: 'Error contact dpannvelo',
+          text2: 'Error please contact dpannvelo',
           visibilityTime: 4000,
           autoHide: true,
           topOffset: 30,
@@ -167,81 +155,84 @@ export default function SigninDep({navigation}) {
   };
 
   return (
-    <ScrollView style={{backgroundColor: Colors.default, paddingVertical: 50}}>
-      <View style={{zIndex: 9999}}>
-        <Toast ref={ref => Toast.setRef(ref)} />
-      </View>
-      <Text style={styles.title}>CRÉEZ UN COMPTE DÉPANNEUR</Text>
-      <View style={{paddingBottom: 5}}>
-        <Input
-          textAlign="left"
-          placeholder="Doe"
-          label="Nom"
-          value={select.name}
-          labelStyle={{marginBottom: -12, fontSize: 14}}
-          inputStyle={{marginBottom: -5}}
-          onChangeText={name => setSelect({...select, name})}
-        />
-      </View>
-      <View style={{paddingBottom: 5}}>
-        <Input
-          textAlign="left"
-          placeholder="John"
-          label="Prénom"
-          value={select.firstName}
-          labelStyle={{marginBottom: -12, fontSize: 14}}
-          inputStyle={{marginBottom: -5}}
-          onChangeText={firstName => setSelect({...select, firstName})}
-        />
-      </View>
-      <View style={{paddingBottom: 5}}>
-        <Input
-          textAlign="left"
-          placeholder="******@gmail.com"
-          label="Email"
-          value={select.email}
-          labelStyle={{marginBottom: -12, fontSize: 14}}
-          inputStyle={{marginBottom: -5}}
-          onChangeText={email => setSelect({...select, email})}
-        />
-      </View>
-      <View style={{paddingBottom: 5}}>
-        <Input
-          textAlign="left"
-          placeholder="******"
-          label="Mot de passe"
-          value={select.password}
-          secureTextEntry={true}
-          labelStyle={{marginBottom: -12, fontSize: 14}}
-          inputStyle={{marginBottom: -5}}
-          onChangeText={password => setSelect({...select, password})}
-        />
-      </View>
-      <View style={{paddingBottom: 5}}>
-        <Input
-          textAlign="left"
-          placeholder="******"
-          label="Confirmer le mot de passe"
-          value={select.confirm}
-          secureTextEntry={true}
-          labelStyle={{marginBottom: -12, fontSize: 14}}
-          inputStyle={{marginBottom: -5}}
-          onChangeText={confirm => setSelect({...select, confirm})}
-        />
-      </View>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
-      )}
-      <View style={{marginTop: 20}}>
-        <ButtonDefault
-          buttonOulined
-          handleSend={() => navigation.navigate('Login')}
-          title="Se connecter"
-        />
-      </View>
-    </ScrollView>
+    <View>
+      <ScrollView
+        style={{backgroundColor: Colors.default, paddingVertical: 50}}>
+        <View style={{zIndex: 9999}}>
+          <Toast ref={ref => Toast.setRef(ref)} />
+        </View>
+        <Text style={styles.title}>CRÉEZ UN COMPTE DÉPANNEUR</Text>
+        <View>
+          <Input
+            textAlign="left"
+            placeholder="Doe"
+            label="Nom"
+            value={select.name}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
+            onChangeText={name => setSelect({...select, name})}
+          />
+        </View>
+        <View>
+          <Input
+            textAlign="left"
+            placeholder="John"
+            label="Prénom"
+            value={select.firstName}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
+            onChangeText={firstName => setSelect({...select, firstName})}
+          />
+        </View>
+        <View>
+          <Input
+            textAlign="left"
+            placeholder="******@gmail.com"
+            label="Email"
+            value={select.email}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
+            onChangeText={email => setSelect({...select, email})}
+          />
+        </View>
+        <View>
+          <Input
+            textAlign="left"
+            placeholder="******"
+            label="Mot de passe"
+            value={select.password}
+            secureTextEntry={true}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
+            onChangeText={password => setSelect({...select, password})}
+          />
+        </View>
+        <View style={{marginBottom: 5}}>
+          <Input
+            textAlign="left"
+            placeholder="******"
+            label="Confirmer le mot de passe"
+            value={select.confirm}
+            secureTextEntry={true}
+            labelStyle={{marginBottom: -12, fontSize: 14}}
+            inputStyle={{marginBottom: -5}}
+            onChangeText={confirm => setSelect({...select, confirm})}
+          />
+        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
+        )}
+        <View style={{marginBottom: 70, marginTop: 20}}>
+          <ButtonDefault
+            buttonOulined
+            handleSend={() => navigation.navigate('Login')}
+            title="Se connecter"
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

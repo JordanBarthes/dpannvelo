@@ -27,6 +27,7 @@ const HEIGHT = Dimensions.get('window').height;
 import Toast from 'react-native-toast-message';
 import {useDispatch} from 'react-redux';
 import {GET_USER} from '../../redux/type';
+import {TYPE_DEP} from '../../locale';
 
 export default function SigninNextDep({route, navigation}) {
   const [loading, setLoading] = useState(false);
@@ -122,6 +123,7 @@ export default function SigninNextDep({route, navigation}) {
         kbis,
         profile,
         message,
+        type: TYPE_DEP,
       });
 
       dispatch({

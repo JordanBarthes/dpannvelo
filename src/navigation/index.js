@@ -12,7 +12,6 @@ import Maps from '../screens/Maps/Maps';
 import Signin from '../screens/Login/Signin';
 import SigninNext from '../screens/Login/SigninNext';
 import Login from '../screens/Login/Login';
-import Homelogin from '../screens/Login/Homelogin';
 import Compte from '../screens/Compte/Compte';
 import Abonnement from '../screens/Abonnement/Abonnement';
 import History from '../screens/History/History';
@@ -90,20 +89,13 @@ const Navigator = ({user}) => {
             options={{
               header: ({navigation}) => <View></View>,
             }}
-            name="Homelogin"
-            component={Homelogin}
+            name="Login"
+            component={Login}
           />
           <Stack.Screen name="Signin" component={Signin} />
           <Stack.Screen name="SigninNext" component={SigninNext} />
           <Stack.Screen name="SigninDep" component={SigninDep} />
           <Stack.Screen name="SigninNextDep" component={SigninNextDep} />
-          <Stack.Screen
-            options={{
-              header: ({navigation}) => <View></View>,
-            }}
-            name="Login"
-            component={Login}
-          />
         </>
       ) : (
         <>

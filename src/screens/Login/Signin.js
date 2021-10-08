@@ -86,7 +86,7 @@ export default function Signin({navigation}) {
       </View>
       <View style={styles.form}>
         <Text style={styles.title}>CRÉEZ UN COMPTE CLIENT</Text>
-        <View style={{paddingBottom: 5}}>
+        <View>
           <Input
             textAlign="left"
             placeholder="*****@gmail.com"
@@ -97,7 +97,7 @@ export default function Signin({navigation}) {
             onChangeText={email => setSelect({...select, email})}
           />
         </View>
-        <View style={{paddingBottom: 5}}>
+        <View>
           <Input
             textAlign="left"
             placeholder="*******"
@@ -109,7 +109,7 @@ export default function Signin({navigation}) {
             onChangeText={password => setSelect({...select, password})}
           />
         </View>
-        <View style={{paddingBottom: 5}}>
+        <View>
           <Input
             textAlign="left"
             placeholder="*******"
@@ -123,8 +123,14 @@ export default function Signin({navigation}) {
         </View>
       </View>
       <ButtonDefault handleSend={() => onSubmit()} title="Continuer" />
-
       <View style={{marginTop: 30}}>
+        <ButtonDefault
+          buttonOulined
+          handleSend={() => navigation.navigate('SigninDep')}
+          title="Crée un compte dépanneur"
+        />
+      </View>
+      <View style={{marginTop: 20}}>
         <ButtonDefault
           buttonOulined
           handleSend={() => navigation.navigate('Login')}
@@ -136,7 +142,7 @@ export default function Signin({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  form: {padding: 15, marginTop: 70, maxHeight: 1200, zIndex: 3},
+  form: {padding: 15, marginTop: 30, maxHeight: 1200, zIndex: 3},
   title: {
     textAlign: 'center',
     fontSize: 20,

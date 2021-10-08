@@ -37,7 +37,7 @@ const ModalAsk = ({title, text, callBack, modal}) => {
                   fontSize: 16,
                   fontWeight: '700',
                 }}>
-                Yes
+                Oui
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -50,7 +50,7 @@ const ModalAsk = ({title, text, callBack, modal}) => {
                   fontSize: 16,
                   fontWeight: '700',
                 }}>
-                No
+                Non
               </Text>
             </TouchableOpacity>
           </View>

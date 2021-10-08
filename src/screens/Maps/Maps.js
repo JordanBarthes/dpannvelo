@@ -10,6 +10,9 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
+import database from '@react-native-firebase/database';
+
+import {TYPE_DEP, TYPE_USER} from '../../locale';
 
 import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -24,8 +27,11 @@ import HeaderMaps from '../../components/Header/HeaderMaps';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import ModalDefault from '../../components/Modal/ModalDefault';
 import ModalAsk from '../../components/Modal/ModalAsk';
+import {connect} from 'react-redux';
+import Geocoder from 'react-native-geocoding';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY';
+Geocoder.init('AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY');
 
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
@@ -34,7 +40,7 @@ const mooveFree = new Animated.Value(HEIGHT * 0.45);
 const opacityMap = new Animated.Value(0);
 const orderMap = new Animated.Value(0);
 
-export default function Maps({navigation}) {
+function Maps({navigation, user}) {
   const [state, setState] = useState({
     region: {
       latitude: 48.9351526,
@@ -48,7 +54,15 @@ export default function Maps({navigation}) {
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [acceptDep, setAcceptDep] = useState(false);
+
+  const [adresseDep, setAdresseDep] = useState('');
+
   const [depanneurInLoading, setDepanneurInLoading] = useState(false);
+
+  const [depanneur, setDepanneur] = useState([]);
+
+  const [request, setRequest] = useState([]);
 
   const [modalSearchDep, setModalSearchDep] = useState(false);
 
@@ -82,11 +96,76 @@ export default function Maps({navigation}) {
     }
   }, [state.isMapReady]);
 
-  const searchDepanneur = position => {
-    setTimeout(() => {
-      setModalSearchDep(false);
-      setDepanneurInLoading(true);
-    }, 2000);
+  useEffect(() => {
+    if (user?.type === TYPE_USER) {
+      const onChildAdd = database()
+        .ref('/depanneur')
+        .limitToLast(10)
+        .on('child_added', data => {
+          let newDepanneur = [...depanneur, data.val()];
+          setDepanneur(newDepanneur);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => database().ref('/depanneur').off('child_added', onChildAdd);
+    }
+
+    if (user?.type === TYPE_DEP) {
+      const onChildAdd = database()
+        .ref('/request')
+        .limitToLast(10)
+        .on('child_added', data => {
+          if (!acceptDep) {
+            let newRequest = [data.val()];
+
+            setRequest(newRequest);
+
+            let {latitude, longitude} = [...newRequest].pop();
+
+            map.animateToRegion({
+              latitude,
+              longitude,
+              latitudeDelta: 0.045,
+              longitudeDelta: 0.045,
+            });
+
+            Geocoder.from(latitude, longitude)
+              .then(json => {
+                var addressComponent = json.results[0].formatted_address;
+                setAcceptDep(true);
+                setAdresseDep(addressComponent);
+              })
+              .catch(error => console.warn(error));
+          }
+        });
+
+      database()
+        .ref(`/depanneur/${user.id}`)
+        .set({
+          latitude: state.region.latitude,
+          longitude: state.region.longitude,
+          timestamp: database.ServerValue.TIMESTAMP,
+          user,
+        })
+        .then(() => console.log('Data set DEPANNEUR.'))
+        .catch(err => {
+          console.log('ERROR', err);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => database().ref('/request').off('child_added', onChildAdd);
+    }
+  }, []);
+
+  const validateIntervention = () => {
+    setModalSearchDep(false);
+    setDepanneurInLoading(true);
+
+    // ENVOYER EVENT A USER
+
+    // BOUTTON CERTIFIé le depannage
+
+    // SI UPDATE REAL TIME ALR CHANGER VU USER
   };
 
   const handleDeleteDep = () => {
@@ -98,19 +177,21 @@ export default function Maps({navigation}) {
   const handlePositionValide = () => {
     //REQUEST TO GET SEARCH DEPANNEUR + ADD MODAL + Route
 
+    database()
+      .ref(`/request/${user.id}`)
+      .set({
+        typeIntervention: problem,
+        ...positionDrag,
+        timestamp: database.ServerValue.TIMESTAMP,
+        user,
+      })
+      .then(() => console.log('Data set.'))
+      .catch(err => {
+        console.log('ERROR', err);
+      });
+
     setModalSearchDep(true);
     setWaitDep(true);
-    searchDepanneur(positionDrag);
-
-    //OPEN MODAL RECHERCHE
-
-    //OPEN ROUTE
-
-    //AVANT ARRIVER BUTTON IL EST ARRIVER
-    // npm i react-native-maps-directions
-    //DEPANNAGE EN COURS
-
-    // PUIS END
   };
 
   const getPosition = async () => {
@@ -161,6 +242,8 @@ export default function Maps({navigation}) {
     setDepanneurInLoading(false);
     setWaitDep(false);
     setSelectPosition(false);
+
+    //VALIDATION AND PAYEMENT
   };
 
   const centerPosition = () => {
@@ -234,23 +317,30 @@ export default function Maps({navigation}) {
         {state.isMapReady &&
           !selectPosition &&
           state.position &&
-          Array.from([
-            {
-              latitude: 37.4219221,
-              longitude: -122.0540064,
-            },
-            {
-              latitude: 37.4219221,
-              longitude: -122.0240064,
-            },
-            {
-              latitude: 37.4219221,
-              longitude: -122.0140064,
-            },
-          ]).map((e, i) => (
+          user?.type === TYPE_USER &&
+          depanneur.map((e, i) => (
             <DepanneMarker
               key={i}
               source={require('../../assets/icons/Online.png')}
+              driver={{
+                coordinate: {
+                  latitude: e.latitude,
+                  longitude: e.longitude,
+                  latitudeDelta: 0.045,
+                  longitudeDelta: 0.045,
+                },
+              }}
+            />
+          ))}
+
+        {state.isMapReady &&
+          !selectPosition &&
+          state.position &&
+          user?.type === TYPE_DEP &&
+          request.map((e, i) => (
+            <DepanneMarker
+              key={i}
+              source={require('../../assets/icons/Depannage.png')}
               driver={{
                 coordinate: {
                   latitude: e.latitude,
@@ -315,45 +405,47 @@ export default function Maps({navigation}) {
         bottom={depanneurInLoading ? HEIGHT * 0.34 : HEIGHT * 0.28}
         cb={centerPosition}
       />
-      <View style={styles.button}>
-        {!depanneurInLoading && (
-          <ButtonDefault
-            handleSend={() =>
-              selectPosition
-                ? handlePositionValide()
-                : setModalVisible(!modalVisible)
-            }
-            title={
-              selectPosition
-                ? 'Confirmer la position'
-                : "J'ai besoin d'un dépanneur"
-            }
-          />
-        )}
-        {depanneurInLoading && (
-          <>
-            <View style={styles.containerButtonAnnul}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.buttonOulined}
-                onPress={() => setModalAsk(true)}>
-                <Text
-                  style={{
-                    color: Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: '700',
-                  }}>
-                  Annuler
-                </Text>
-              </TouchableOpacity>
-            </View>
+      {user?.type === TYPE_USER && (
+        <View style={styles.button}>
+          {!depanneurInLoading && (
             <ButtonDefault
-              handleSend={() => handlePayement()}
-              title="Le dépanneur est arrivé"
+              handleSend={() =>
+                selectPosition
+                  ? handlePositionValide()
+                  : setModalVisible(!modalVisible)
+              }
+              title={
+                selectPosition
+                  ? 'Confirmer la position'
+                  : "J'ai besoin d'un dépanneur"
+              }
             />
-          </>
-        )}
-      </View>
+          )}
+          {depanneurInLoading && (
+            <>
+              <View style={styles.containerButtonAnnul}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.buttonOulined}
+                  onPress={() => setModalAsk(true)}>
+                  <Text
+                    style={{
+                      color: Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: '700',
+                    }}>
+                    Annuler
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <ButtonDefault
+                handleSend={() => handlePayement()}
+                title="Le dépanneur est arrivé"
+              />
+            </>
+          )}
+        </View>
+      )}
       <Modal
         animationType="slide"
         transparent={true}
@@ -471,9 +563,26 @@ export default function Maps({navigation}) {
           </View>
         </View>
       </Modal>
+
+      <ModalDefault
+        title="CONFIRMER LE DÉPANNAGE"
+        text={`A cet adresse: ${adresseDep}`}
+        callBack={open => {
+          validateIntervention();
+        }}
+        modal={acceptDep}
+      />
     </View>
   );
 }
+
+const mapStateToProps = (state, props) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(Maps);
 
 const styles = StyleSheet.create({
   container: {

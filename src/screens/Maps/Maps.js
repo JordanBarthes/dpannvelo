@@ -11,10 +11,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import database from '@react-native-firebase/database';
+import {Popup} from 'react-native-map-link';
 
 import {TYPE_DEP, TYPE_USER} from '../../locale';
 
-import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import MapViewDirections from 'react-native-maps-directions';
 
@@ -82,6 +83,12 @@ function Maps({navigation, user}) {
 
   const [endDep, setEndDep] = useState(false);
 
+  const [routeDepToReq, setRouteDepToReq] = useState(false);
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [positionDepToReq, setPositionDepToReq] = useState({dep: {}, req: {}});
+
   let map;
   let deleteAsync = false;
   let positionDrag = {
@@ -111,27 +118,35 @@ function Maps({navigation, user}) {
     }
 
     if (user?.type === TYPE_DEP) {
+      // HERE FOR DEP
       const onChildAdd = database()
         .ref('/request')
         .limitToLast(10)
         .on('child_added', data => {
           if (!acceptDep) {
-            let newRequest = [data.val()];
+            let newRequest = [data.val()].filter(e => !e.inLoading);
+
+            if (newRequest.length === 0) {
+              return;
+            }
 
             setRequest(newRequest);
 
             let {latitude, longitude} = [...newRequest].pop();
 
-            map.animateToRegion({
-              latitude,
-              longitude,
-              latitudeDelta: 0.045,
-              longitudeDelta: 0.045,
-            });
+            if (state.isMapReady) {
+              map.animateToRegion({
+                latitude,
+                longitude,
+                latitudeDelta: 0.045,
+                longitudeDelta: 0.045,
+              });
+            }
 
             Geocoder.from(latitude, longitude)
               .then(json => {
                 var addressComponent = json.results[0].formatted_address;
+
                 setAcceptDep(true);
                 setAdresseDep(addressComponent);
               })
@@ -157,43 +172,6 @@ function Maps({navigation, user}) {
     }
   }, []);
 
-  const validateIntervention = () => {
-    setModalSearchDep(false);
-    setDepanneurInLoading(true);
-
-    // ENVOYER EVENT A USER
-
-    // BOUTTON CERTIFIé le depannage
-
-    // SI UPDATE REAL TIME ALR CHANGER VU USER
-  };
-
-  const handleDeleteDep = () => {
-    setWaitDep(false);
-    setDepanneurInLoading(false);
-    setSelectPosition(false);
-  };
-
-  const handlePositionValide = () => {
-    //REQUEST TO GET SEARCH DEPANNEUR + ADD MODAL + Route
-
-    database()
-      .ref(`/request/${user.id}`)
-      .set({
-        typeIntervention: problem,
-        ...positionDrag,
-        timestamp: database.ServerValue.TIMESTAMP,
-        user,
-      })
-      .then(() => console.log('Data set.'))
-      .catch(err => {
-        console.log('ERROR', err);
-      });
-
-    setModalSearchDep(true);
-    setWaitDep(true);
-  };
-
   const getPosition = async () => {
     if (!deleteAsync) {
       deleteAsync = true;
@@ -218,7 +196,9 @@ function Maps({navigation, user}) {
             longitude: location.coords.longitude,
           };
           deleteAsync = false;
-          if (state.position) map.animateToRegion(region);
+          if (state.position) {
+            map.animateToRegion(region);
+          }
           return setState({
             region,
             position: true,
@@ -235,6 +215,70 @@ function Maps({navigation, user}) {
         },
       );
     }
+  };
+
+  const validateIntervention = () => {
+    setModalSearchDep(false);
+    setDepanneurInLoading(true);
+    setAcceptDep(false);
+
+    console.log('VALIDE INTERVENTION');
+
+    // ENVOYER EVENT A USER ET MODIFIER EVENT IN LOADING
+    let {latitude, longitude, user: userData} = [...request].pop();
+
+    database()
+      .ref(`/request/${userData.id}`)
+      .update({
+        inLoading: true,
+      })
+      .then(() => {
+        console.log('validateIntervention Data set');
+
+        setPositionDepToReq({
+          dep: {
+            latitude: state.region.latitude,
+            longitude: state.region.longitude,
+          },
+          req: {latitude, longitude},
+        });
+        setRouteDepToReq(true);
+        setIsVisible(true);
+      })
+      .catch(err => {
+        console.log('ERROR', err);
+      });
+
+    //demarrer route + BOUTTON CERTIFIé le depannage + WAZE
+
+    // SI UPDATE REAL TIME ALR CHANGER VU USER
+  };
+
+  const handleDeleteDep = () => {
+    setWaitDep(false);
+    setDepanneurInLoading(false);
+    setSelectPosition(false);
+  };
+
+  const handlePositionValide = () => {
+    //  TIMER
+
+    database()
+      .ref(`/request/${user.id}`)
+      .set({
+        typeIntervention: problem,
+        ...positionDrag,
+        timestamp: database.ServerValue.TIMESTAMP,
+        inLoading: false,
+        user,
+      })
+      .then(() => console.log('Data set.'))
+      .catch(err => {
+        console.log('ERROR', err);
+      });
+
+    setModalSearchDep(true);
+    setWaitDep(true);
   };
 
   const handlePayement = () => {
@@ -340,6 +384,7 @@ function Maps({navigation, user}) {
           request.map((e, i) => (
             <DepanneMarker
               key={i}
+              callBack={() => {}}
               source={require('../../assets/icons/Depannage.png')}
               driver={{
                 coordinate: {
@@ -400,11 +445,66 @@ function Maps({navigation, user}) {
             apikey={GOOGLE_MAPS_APIKEY}
           />
         )}
+        {routeDepToReq && (
+          <MapViewDirections
+            origin={{
+              latitude: positionDepToReq.dep.latitude,
+              longitude: positionDepToReq.dep.longitude,
+            }}
+            mode="DRIVING"
+            // timePrecision="high"
+            destination={{
+              latitude: positionDepToReq.req.latitude,
+              longitude: positionDepToReq.req.longitude,
+            }}
+            strokeWidth={4}
+            strokeColor="#3CD689"
+            apikey={GOOGLE_MAPS_APIKEY}
+          />
+        )}
       </MapView>
       <CurrentLocation
         bottom={depanneurInLoading ? HEIGHT * 0.34 : HEIGHT * 0.28}
         cb={centerPosition}
       />
+      <Popup
+        isVisible={isVisible}
+        onCancelPressed={() => setIsVisible(false)}
+        onAppPressed={() => setIsVisible(false)}
+        onBackButtonPressed={() => setIsVisible(false)}
+        modalProps={{
+          animationIn: 'slideInUp',
+        }}
+        appsWhiteList={[]}
+        options={{
+          latitude: state.region.latitude,
+          longitude: state.region.longitude,
+          dialogTitle: 'Open Waze',
+          appsWhiteList: [],
+          app: 'waze',
+        }}
+        style={{
+          container: {},
+          itemContainer: {},
+          image: {},
+          itemText: {},
+          headerContainer: {},
+          titleText: {},
+          subtitleText: {},
+          cancelButtonContainer: {},
+          cancelButtonText: {},
+          separatorStyle: {},
+          activityIndicatorContainer: {},
+        }}
+      />
+      {routeDepToReq && (
+        <View style={styles.button}>
+          <ButtonDefault
+            handleSend={() => {}}
+            title={'Certifié le dépannage'}
+          />
+        </View>
+      )}
       {user?.type === TYPE_USER && (
         <View style={styles.button}>
           {!depanneurInLoading && (
@@ -520,7 +620,9 @@ function Maps({navigation, user}) {
         title="Etes vous sure ?"
         text="L'annulation est définitive"
         callBack={ask => {
-          if (ask) handleDeleteDep();
+          if (ask) {
+            handleDeleteDep();
+          }
           setModalAsk(false);
         }}
         modal={modalAsk}

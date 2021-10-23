@@ -1,4 +1,5 @@
 {
   "name": "dpannvelo",
-  "displayName": "dpannvelo"
+  "displayName": "dpannvelo",
+    "orientation": "portrait"
 }

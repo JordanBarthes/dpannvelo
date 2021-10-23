@@ -19,7 +19,7 @@ export default function CurrentLocation(props) {
     <View style={[styles.container, {top: HEIGHT - bottom}]}>
       <TouchableOpacity onPress={() => cb()}>
         <Image
-          style={{width: 15, height: 15, resizeMode: 'contain'}}
+          style={{width: 22, height: 22, resizeMode: 'contain'}}
           source={require('../../assets/icons/Vector.png')}
         />
       </TouchableOpacity>
@@ -30,10 +30,10 @@ export default function CurrentLocation(props) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    width: 36,
-    height: 36,
+    width: 47,
+    height: 47,
     backgroundColor: '#fff',
-    left: WIDTH - 55,
+    left: WIDTH - 67,
     borderRadius: 50,
     shadowColor: '#000000',
     elevation: 7,

@@ -10,6 +10,8 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
+
+import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import {Popup} from 'react-native-map-link';
 
@@ -28,8 +30,9 @@ import HeaderMaps from '../../components/Header/HeaderMaps';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import ModalDefault from '../../components/Modal/ModalDefault';
 import ModalAsk from '../../components/Modal/ModalAsk';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import Geocoder from 'react-native-geocoding';
+import {GET_USER} from '../../redux/type';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY';
 Geocoder.init('AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY');
@@ -87,6 +90,8 @@ function Maps({navigation, user}) {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [modalCertificaVisible, setModalCertificaVisible] = useState(false);
+
   const [positionDepToReq, setPositionDepToReq] = useState({dep: {}, req: {}});
 
   let map;
@@ -95,6 +100,7 @@ function Maps({navigation, user}) {
     latitude: state.region.latitude,
     longitude: state.region.longitude,
   };
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Geolocation.requestAuthorization();
@@ -224,7 +230,6 @@ function Maps({navigation, user}) {
 
     console.log('VALIDE INTERVENTION');
 
-    // ENVOYER EVENT A USER ET MODIFIER EVENT IN LOADING
     let {latitude, longitude, user: userData} = [...request].pop();
 
     database()
@@ -240,8 +245,12 @@ function Maps({navigation, user}) {
             latitude: state.region.latitude,
             longitude: state.region.longitude,
           },
-          req: {latitude, longitude},
+          req: {
+            latitude,
+            longitude,
+          },
         });
+
         setRouteDepToReq(true);
         setIsVisible(true);
       })
@@ -250,7 +259,6 @@ function Maps({navigation, user}) {
       });
 
     //demarrer route + BOUTTON CERTIFIé le depannage + WAZE
-
     // SI UPDATE REAL TIME ALR CHANGER VU USER
   };
 
@@ -260,9 +268,36 @@ function Maps({navigation, user}) {
     setSelectPosition(false);
   };
 
-  const handlePositionValide = () => {
-    //  TIMER
+  const saveIntervention = async () => {
+    let {
+      latitude,
+      longitude,
+      timestamp,
+      user: userData,
+      typeIntervention,
+    } = [...request].pop();
 
+    const history = [
+      ...user.history,
+      {
+        date: new Date().getTime(),
+        intervention: {
+          latitude,
+          longitude,
+          timestamp,
+          user: userData,
+          typeIntervention,
+        },
+      },
+    ];
+
+    await firestore().collection('users').doc(user.id).update(history);
+    await firestore().collection('users').doc(userData.id).update(history);
+
+    dispatch({type: GET_USER, payload: {...user, ...history}});
+  };
+
+  const handlePositionValide = () => {
     database()
       .ref(`/request/${user.id}`)
       .set({
@@ -278,6 +313,13 @@ function Maps({navigation, user}) {
       });
 
     setModalSearchDep(true);
+
+    setTimeout(() => {
+      if (modalSearchDep) {
+        setModalSearchDep(false);
+      }
+    }, 20000);
+
     setWaitDep(true);
   };
 
@@ -500,11 +542,24 @@ function Maps({navigation, user}) {
       {routeDepToReq && (
         <View style={styles.button}>
           <ButtonDefault
-            handleSend={() => {}}
+            handleSend={() => {
+              setModalCertificaVisible(!modalCertificaVisible);
+            }}
             title={'Certifié le dépannage'}
           />
         </View>
       )}
+      <ModalDefault
+        title="DÉPANNAGE CERTIFIÉ !"
+        text={`A cet adresse: ${adresseDep}`}
+        callBack={open => {
+          setRouteDepToReq(false);
+          setModalCertificaVisible(false);
+
+          saveIntervention();
+        }}
+        modal={modalCertificaVisible}
+      />
       {user?.type === TYPE_USER && (
         <View style={styles.button}>
           {!depanneurInLoading && (
@@ -635,7 +690,7 @@ function Maps({navigation, user}) {
         modal={endDep}
       />
       <ModalDefault
-        title="Confirmer de dépannages"
+        title="Confirmer le dépannages"
         text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
               nonumy eirmod tempor"
         callBack={open => setModal(open)}

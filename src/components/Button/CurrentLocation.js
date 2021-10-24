@@ -30,8 +30,8 @@ export default function CurrentLocation(props) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    width: 47,
-    height: 47,
+    width: 50,
+    height: 50,
     backgroundColor: '#fff',
     left: WIDTH - 67,
     borderRadius: 50,

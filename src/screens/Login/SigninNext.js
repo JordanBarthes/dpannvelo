@@ -13,7 +13,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
 import {GET_USER} from '../../redux/type';
-import {ABO_INACTIF, TYPE_USER} from '../../locale';
+import {ABO_ACTIF, ABO_INACTIF, TYPE_USER} from '../../locale';
 
 export default function SigninNext({route, navigation}) {
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,7 @@ export default function SigninNext({route, navigation}) {
             .set({
               id: token.user.uid,
               email: token.user.email,
-              abonnement: ABO_INACTIF,
+              abonnement: ABO_ACTIF,
               type: TYPE_USER,
               ...select,
             });
@@ -82,7 +82,7 @@ export default function SigninNext({route, navigation}) {
             payload: {
               id: token.user.uid,
               email: token.user.email,
-              abonnement: ABO_INACTIF,
+              abonnement: ABO_ACTIF,
               type: TYPE_USER,
               ...select,
             },

@@ -10,8 +10,8 @@ export default function HeaderMaps({navigation}) {
         flex: 3,
         flexDirection: 'row',
         alignItems: 'flex-end',
-        paddingLeft: 17,
-        paddingRight: 17,
+        paddingLeft: 20,
+        paddingRight: 20,
       }}>
       <View
         style={{
@@ -26,7 +26,7 @@ export default function HeaderMaps({navigation}) {
             onPress={() => navigation.navigate('Compte')}
             style={{
               backgroundColor: Colors.white,
-              borderRadius: 20,
+              borderRadius: 30,
               paddingRight: 3,
               paddingLeft: 3,
               paddingTop: 3,
@@ -34,7 +34,7 @@ export default function HeaderMaps({navigation}) {
               marginBottom: 2,
             }}>
             <Image
-              style={{width: 35, height: 35, resizeMode: 'contain'}}
+              style={{width: 45, height: 45, resizeMode: 'contain'}}
               source={require('../../assets/icons/Profil.png')}
             />
           </TouchableOpacity>

@@ -444,11 +444,11 @@ function Compte({navigation, user}) {
                       fontWeight: 'bold',
                       color: Colors.grey,
                     }}>
-                    Paiements/Factures
+                    Factures
                   </Text>
                 </View>
 
-                <View style={styles.content}>
+                {/* <View style={styles.content}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -473,7 +473,7 @@ function Compte({navigation, user}) {
                       source={require('../../assets/icons/arrowRight.png')}
                     />
                   </View>
-                </View>
+                </View> */}
 
                 <Pressable onPress={() => navigation.navigate('History')}>
                   <View style={styles.content}>

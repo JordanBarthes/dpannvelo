@@ -40,19 +40,17 @@ Geocoder.init('AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY');
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
-const mooveFree = new Animated.Value(HEIGHT * 0.45);
 const opacityMap = new Animated.Value(0);
-const orderMap = new Animated.Value(0);
 
 function Maps({navigation, user}) {
   const [state, setState] = useState({
     region: {
-      latitude: 48.9351526,
-      longitude: 2.5720603,
+      latitude: 37.417001,
+      longitude: -122.072376,
       latitudeDelta: 0.045,
       longitudeDelta: 0.045,
     },
-    position: true,
+    position: false,
     isMapReady: false,
   });
 
@@ -64,7 +62,7 @@ function Maps({navigation, user}) {
 
   const [depanneurInLoading, setDepanneurInLoading] = useState(false);
 
-  const [depanneur, setDepanneur] = useState([]);
+  // const [depanneur, setDepanneur] = useState([]);
 
   const [request, setRequest] = useState([]);
 
@@ -76,13 +74,13 @@ function Maps({navigation, user}) {
 
   const [selectPosition, setSelectPosition] = useState(false);
 
-  const [position, setPosition] = useState(null);
+  // const [modal, setModal] = useState(false);
 
-  const [startSearch, setSartSearch] = useState(false);
-  const [modal, setModal] = useState(false);
   const [modalAsk, setModalAsk] = useState(false);
 
   const [problem, setProblem] = useState(null);
+
+  const [errorModal, setErrorModal] = useState(false);
 
   const [endDep, setEndDep] = useState(false);
 
@@ -104,79 +102,185 @@ function Maps({navigation, user}) {
 
   useEffect(() => {
     // Geolocation.requestAuthorization();
-    if (state.isMapReady) {
+    if (!state.position) {
       getPosition();
     }
-  }, [state.isMapReady]);
+    if (state.isMapReady) {
+      if (positionDrag.latitude && state.position) {
+        if (user?.type === TYPE_USER) {
+          database()
+            .ref(`/request/${user.id}`)
+            .once(
+              'value',
+              (data, key) => {
+                const dataRequest = data.val();
+                console.log('INIT dataRequest', dataRequest);
+
+                // Ca depend si il est TRUE OU FALSE
+
+                // if (dataRequest && key !== 'inLoading') {
+                //   setModalSearchDep(true);
+                //   setDepanneurInLoading(true);
+                //   handlePositionRechercheDepart();
+                // }
+              },
+              errorObject => {
+                console.log('The read failed: ' + errorObject.name);
+              },
+            );
+
+          const onChildUpdate = database()
+            .ref(`/request/${user.id}`)
+            .on('child_changed', (data, key) => {
+              const dataRequest = data.val();
+              console.log('*******USER THIS VALUE CHANGE ******', dataRequest);
+
+              if (dataRequest) {
+                //UPDATE POP POUR PAS QUIL LE DELETE
+
+                database()
+                  .ref(`/request/${user.id}`)
+                  .once('value', dataGet => {
+                    const dataChange = dataGet.val();
+                    console.log(
+                      'THIS VALUE CHANGE USERR *********',
+                      dataChange,
+                    );
+
+                    if (dataChange?.inLoading) {
+                      setModalSearchDep(false);
+                      setPositionDepToReq(dataChange.positionDep);
+                    }
+                  });
+              }
+            });
+          // Stop listening for updates when no longer required
+          return () => {
+            database()
+              .ref(`/request/${user.id}`)
+              .off('child_changed', onChildUpdate);
+          };
+        }
+
+        if (user?.type === TYPE_DEP) {
+          ///////VERIFIER SI TU AJOUTE UNE REQUETE AVANT DE L4OUVIRE SI ON LE LANCE BIEN
+
+          const onChildAdd = database()
+            .ref('/request')
+            .limitToLast(10)
+            .on('child_added', data => {
+              console.log('GET REQUEST');
+              if (!acceptDep) {
+                let newRequest = [data.val()].filter(e => !e.inLoading);
+                console.log('GET REQUEST', newRequest);
+                if (newRequest.length === 0) {
+                  return;
+                }
+
+                setRequest(newRequest);
+
+                let {
+                  latitude,
+                  longitude,
+                  user: userData,
+                } = [...newRequest].pop();
+
+                database()
+                  .ref(`/request/${userData.id}`)
+                  .once('child_removed', (e, key) => {
+                    console.log(
+                      '************************** DEPANNEUR  child_removed ************',
+                      e.val(),
+                      key,
+                    );
+                    setAcceptDep(false);
+                    setAdresseDep('');
+                  });
+
+                // if (state.isMapReady) {
+                //   console.log('map', map, {
+                //     latitude,
+                //     longitude,
+                //     latitudeDelta: 0.045,
+                //     longitudeDelta: 0.045,
+                //   });
+                //   map.animateToRegion({
+                //     latitude,
+                //     longitude,
+                //     latitudeDelta: 0.045,
+                //     longitudeDelta: 0.045,
+                //   });
+                // }
+
+                getGeoCode(latitude, longitude);
+              }
+            });
+
+          database()
+            .ref(`/depanneur/${user.id}`)
+            .set({
+              latitude: state.region.latitude,
+              longitude: state.region.longitude,
+              timestamp: database.ServerValue.TIMESTAMP,
+              user,
+            })
+            .then(() => console.log('Data set DEPANNEUR.'))
+            .catch(err => {
+              console.log('ERROR', err);
+            });
+
+          // Stop listening for updates when no longer required
+          return () =>
+            database().ref('/request').off('child_added', onChildAdd);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isMapReady, acceptDep]);
 
   useEffect(() => {
-    if (user?.type === TYPE_USER) {
-      const onChildAdd = database()
-        .ref('/depanneur')
-        .limitToLast(10)
-        .on('child_added', data => {
-          let newDepanneur = [...depanneur, data.val()];
-          setDepanneur(newDepanneur);
-        });
+    const callfonction = () => {
+      //PROBLEME IL LANCE COMME MEME
 
-      // Stop listening for updates when no longer required
-      return () => database().ref('/depanneur').off('child_added', onChildAdd);
-    }
-
-    if (user?.type === TYPE_DEP) {
-      // HERE FOR DEP
-      const onChildAdd = database()
-        .ref('/request')
-        .limitToLast(10)
-        .on('child_added', data => {
-          if (!acceptDep) {
-            let newRequest = [data.val()].filter(e => !e.inLoading);
-
-            if (newRequest.length === 0) {
-              return;
-            }
-
-            setRequest(newRequest);
-
-            let {latitude, longitude} = [...newRequest].pop();
-
-            if (state.isMapReady) {
-              map.animateToRegion({
-                latitude,
-                longitude,
-                latitudeDelta: 0.045,
-                longitudeDelta: 0.045,
-              });
-            }
-
-            Geocoder.from(latitude, longitude)
-              .then(json => {
-                var addressComponent = json.results[0].formatted_address;
-
-                setAcceptDep(true);
-                setAdresseDep(addressComponent);
-              })
-              .catch(error => console.warn(error));
-          }
-        });
+      //CALL API
 
       database()
-        .ref(`/depanneur/${user.id}`)
-        .set({
-          latitude: state.region.latitude,
-          longitude: state.region.longitude,
-          timestamp: database.ServerValue.TIMESTAMP,
-          user,
-        })
-        .then(() => console.log('Data set DEPANNEUR.'))
-        .catch(err => {
-          console.log('ERROR', err);
-        });
+        .ref(`/request/${user.id}`)
+        .once('value', dataGet => {
+          const dataChange = dataGet.val();
 
-      // Stop listening for updates when no longer required
-      return () => database().ref('/request').off('child_added', onChildAdd);
+          if (!dataChange?.inLoading) {
+            setModalSearchDep(false);
+
+            setDepanneurInLoading(false);
+
+            setErrorModal(true);
+
+            database().ref(`/request/${user.id}`).remove();
+
+            setTimeout(() => {
+              setErrorModal(false);
+            }, 5000);
+          }
+        });
+    };
+    if (modalSearchDep) {
+      setTimeout(() => {
+        callfonction();
+      }, 15000);
     }
-  }, []);
+  }, [modalSearchDep, user.id]);
+
+  const getGeoCode = (latitude, longitude) => {
+    Geocoder.from(latitude, longitude)
+      .then(json => {
+        var addressComponent = json.results[0].formatted_address;
+
+        setAcceptDep(true);
+        setAdresseDep(addressComponent);
+      })
+      .catch(error => console.warn(error));
+  };
 
   const getPosition = async () => {
     if (!deleteAsync) {
@@ -190,6 +294,7 @@ function Maps({navigation, user}) {
             deleteAsync = false;
             return setState({...state, position: false});
           }
+
           let region = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -208,7 +313,7 @@ function Maps({navigation, user}) {
           return setState({
             region,
             position: true,
-            isMapReady: true,
+            isMapReady: state.isMapReady,
           });
         },
         e => {
@@ -224,38 +329,36 @@ function Maps({navigation, user}) {
   };
 
   const validateIntervention = () => {
-    setModalSearchDep(false);
+    // setModalSearchDep(false);
     setDepanneurInLoading(true);
     setAcceptDep(false);
 
-    console.log('VALIDE INTERVENTION');
-
     let {latitude, longitude, user: userData} = [...request].pop();
+
+    const dataPosition = {
+      dep: {
+        latitude: state.region.latitude,
+        longitude: state.region.longitude,
+      },
+      req: {
+        latitude,
+        longitude,
+      },
+    };
 
     database()
       .ref(`/request/${userData.id}`)
       .update({
         inLoading: true,
+        positionDep: dataPosition,
       })
       .then(() => {
-        console.log('validateIntervention Data set');
-
-        setPositionDepToReq({
-          dep: {
-            latitude: state.region.latitude,
-            longitude: state.region.longitude,
-          },
-          req: {
-            latitude,
-            longitude,
-          },
-        });
-
+        setPositionDepToReq(dataPosition);
         setRouteDepToReq(true);
         setIsVisible(true);
       })
       .catch(err => {
-        console.log('ERROR', err);
+        console.log('******** ERROR validateIntervention ******** ', err);
       });
 
     //demarrer route + BOUTTON CERTIFIé le depannage + WAZE
@@ -263,6 +366,13 @@ function Maps({navigation, user}) {
   };
 
   const handleDeleteDep = () => {
+    //REMOVE REQUEST
+    database().ref(`/request/${user.id}`).remove();
+
+    // STORAGE IN HISTORY ANNULER
+
+    // jE PUSH LES ELEEMNT EN HISTORY ET JE MES L4ID DANS UN ARRAY history DE L'USER
+
     setWaitDep(false);
     setDepanneurInLoading(false);
     setSelectPosition(false);
@@ -298,6 +408,10 @@ function Maps({navigation, user}) {
   };
 
   const handlePositionValide = () => {
+    //LANCEMENT DE LA REQUETE POUR AVOIR UN DEPANNEUR
+
+    // eviter de passer history
+
     database()
       .ref(`/request/${user.id}`)
       .set({
@@ -307,19 +421,17 @@ function Maps({navigation, user}) {
         inLoading: false,
         user,
       })
-      .then(() => console.log('Data set.'))
+      .then(() => {
+        handlePositionRechercheDepart();
+      })
       .catch(err => {
         console.log('ERROR', err);
       });
+  };
 
+  const handlePositionRechercheDepart = () => {
+    console.log('REQUEST DEPANNEUR', modalSearchDep);
     setModalSearchDep(true);
-
-    setTimeout(() => {
-      if (modalSearchDep) {
-        setModalSearchDep(false);
-      }
-    }, 20000);
-
     setWaitDep(true);
   };
 
@@ -327,20 +439,9 @@ function Maps({navigation, user}) {
     setEndDep(true);
     setDepanneurInLoading(false);
     setWaitDep(false);
-    setSelectPosition(false);
+    // setSelectPosition(false);
 
     //VALIDATION AND PAYEMENT
-  };
-
-  const centerPosition = () => {
-    const {latitude, longitude, latitudeDelta, longitudeDelta} = state.region;
-
-    map.animateToRegion({
-      latitude,
-      longitude,
-      latitudeDelta,
-      longitudeDelta,
-    });
   };
 
   const backgoundOpacity = opacityMap.interpolate({
@@ -361,27 +462,25 @@ function Maps({navigation, user}) {
         ...region,
       },
     });
-    centerPosition();
+    getPosition();
   };
 
   const onDragEnd = e => {
-    console.log('e.nativeEvent.coordinate', e.nativeEvent.coordinate);
     positionDrag = e.nativeEvent.coordinate;
   };
 
   return (
     <View style={styles.container}>
-      {!startSearch && (
-        <Animated.View
-          style={[
-            styles.headerMap,
-            {
-              opacity: backgoundOpacity,
-            },
-          ]}>
-          <HeaderMaps navigation={navigation} />
-        </Animated.View>
-      )}
+      <Animated.View
+        style={[
+          styles.headerMap,
+          {
+            opacity: backgoundOpacity,
+          },
+        ]}>
+        <HeaderMaps navigation={navigation} />
+      </Animated.View>
+
       <MapView
         provider={PROVIDER_GOOGLE}
         showsMyLocationButton={false}
@@ -400,7 +499,7 @@ function Maps({navigation, user}) {
         ]}
         ref={mapView => (map = mapView)}
         initialRegion={state.region}>
-        {state.isMapReady &&
+        {/* {state.isMapReady &&
           !selectPosition &&
           state.position &&
           user?.type === TYPE_USER &&
@@ -417,12 +516,13 @@ function Maps({navigation, user}) {
                 },
               }}
             />
-          ))}
+          ))} */}
 
         {state.isMapReady &&
           !selectPosition &&
           state.position &&
           user?.type === TYPE_DEP &&
+          request.length > 0 &&
           request.map((e, i) => (
             <DepanneMarker
               key={i}
@@ -438,7 +538,7 @@ function Maps({navigation, user}) {
               }}
             />
           ))}
-        {!selectPosition && (
+        {!selectPosition && state.position && (
           <Marker.Animated
             coordinate={{
               latitude: state.region.latitude,
@@ -470,24 +570,24 @@ function Maps({navigation, user}) {
             icon={require('../../assets/icons/Vector.png')}
           />
         )}
-        {waitDep && (
+        {waitDep && state.position && positionDepToReq?.dep?.latitude && (
           <MapViewDirections
             origin={{
-              latitude: positionDrag.latitude,
-              longitude: positionDrag.longitude,
+              latitude: positionDepToReq.dep.latitude,
+              longitude: positionDepToReq.dep.longitude,
             }}
             mode="DRIVING"
             // timePrecision="high"
             destination={{
-              latitude: 37.4213821,
-              longitude: -122.0440064,
+              latitude: positionDepToReq.req.latitude,
+              longitude: positionDepToReq.req.longitude,
             }}
             strokeWidth={4}
             strokeColor="#3CD689"
             apikey={GOOGLE_MAPS_APIKEY}
           />
         )}
-        {routeDepToReq && (
+        {routeDepToReq && state.position && positionDepToReq.dep.latitude && (
           <MapViewDirections
             origin={{
               latitude: positionDepToReq.dep.latitude,
@@ -507,38 +607,40 @@ function Maps({navigation, user}) {
       </MapView>
       <CurrentLocation
         bottom={depanneurInLoading ? HEIGHT * 0.34 : HEIGHT * 0.28}
-        cb={centerPosition}
+        cb={getPosition}
       />
-      <Popup
-        isVisible={isVisible}
-        onCancelPressed={() => setIsVisible(false)}
-        onAppPressed={() => setIsVisible(false)}
-        onBackButtonPressed={() => setIsVisible(false)}
-        modalProps={{
-          animationIn: 'slideInUp',
-        }}
-        appsWhiteList={[]}
-        options={{
-          latitude: state.region.latitude,
-          longitude: state.region.longitude,
-          dialogTitle: 'Open Waze',
-          appsWhiteList: [],
-          app: 'waze',
-        }}
-        style={{
-          container: {},
-          itemContainer: {},
-          image: {},
-          itemText: {},
-          headerContainer: {},
-          titleText: {},
-          subtitleText: {},
-          cancelButtonContainer: {},
-          cancelButtonText: {},
-          separatorStyle: {},
-          activityIndicatorContainer: {},
-        }}
-      />
+      {positionDepToReq?.req?.latitude && (
+        <Popup
+          isVisible={isVisible}
+          onCancelPressed={() => setIsVisible(false)}
+          onAppPressed={() => setIsVisible(false)}
+          onBackButtonPressed={() => setIsVisible(false)}
+          modalProps={{
+            animationIn: 'slideInUp',
+          }}
+          appsWhiteList={[]}
+          options={{
+            latitude: positionDepToReq?.req?.latitude,
+            longitude: positionDepToReq?.req?.longitude,
+            dialogTitle: 'Open Waze',
+            appsWhiteList: [],
+            app: 'waze',
+          }}
+          style={{
+            container: {},
+            itemContainer: {},
+            image: {},
+            itemText: {},
+            headerContainer: {},
+            titleText: {},
+            subtitleText: {},
+            cancelButtonContainer: {},
+            cancelButtonText: {},
+            separatorStyle: {},
+            activityIndicatorContainer: {},
+          }}
+        />
+      )}
       {routeDepToReq && (
         <View style={styles.button}>
           <ButtonDefault
@@ -689,13 +791,13 @@ function Maps({navigation, user}) {
         encour
         modal={endDep}
       />
-      <ModalDefault
+      {/* <ModalDefault
         title="Confirmer le dépannages"
         text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
               nonumy eirmod tempor"
         callBack={open => setModal(open)}
         modal={modal}
-      />
+      /> */}
       <ModalDefault
         title="Confirmer votre position"
         text="Maintenez appuyer sur le Marker pour le deplacer et ensuite confirmer votre position."
@@ -705,17 +807,21 @@ function Maps({navigation, user}) {
         }}
         modal={modalPositionVisible}
       />
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={modalSearchDep}
-        onRequestClose={() => {
-          setModalSearchDep(!modalSearchDep);
-        }}>
+      <Modal animationType="none" transparent={true} visible={modalSearchDep}>
         <View style={styles.topView}>
           <View style={styles.modalLoading}>
             <Text style={styles.textModalLoading}>
               Veuillez patienter, nous attendons la confirmation d’un dépanneur.
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="none" transparent={true} visible={errorModal}>
+        <View style={styles.topView}>
+          <View style={styles.modalLoading}>
+            <Text style={styles.textModalLoading}>
+              Toutes nos équipes sont occupé, réassayer plus tard.
             </Text>
           </View>
         </View>

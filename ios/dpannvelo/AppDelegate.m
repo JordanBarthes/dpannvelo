@@ -13,6 +13,7 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
@@ -20,7 +21,6 @@ static void InitializeFlipper(UIApplication *application) {
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
   [client addPlugin:[FlipperKitReactPlugin new]];
   [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [GMSServices provideAPIKey:@"AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY"]; // add this line using the api key obtained from Google Console
   [client start];
 }
 #endif
@@ -29,6 +29,7 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [GMSServices provideAPIKey:@"AIzaSyBbtExaxh5Gw-QJ0v97kMvZHxccN78dqSY"]; // add this line using the api key obtained from Google Console
    if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
@@ -40,6 +41,7 @@ static void InitializeFlipper(UIApplication *application) {
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"dpannvelo"
                                             initialProperties:nil];
+
 
   if (@available(iOS 13.0, *)) {
       rootView.backgroundColor = [UIColor systemBackgroundColor];

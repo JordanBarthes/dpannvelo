@@ -92,6 +92,8 @@ function Maps({navigation, user}) {
 
   const [positionDepToReq, setPositionDepToReq] = useState({dep: {}, req: {}});
 
+  const [client, setClient] = useState(null);
+
   let map;
   let deleteAsync = false;
   let positionDrag = {
@@ -149,6 +151,7 @@ function Maps({navigation, user}) {
 
                     if (dataChange?.inLoading) {
                       setModalSearchDep(false);
+                      setDepanneurInLoading(false);
                       setPositionDepToReq(dataChange.positionDep);
                     }
                   });
@@ -177,13 +180,12 @@ function Maps({navigation, user}) {
                   return;
                 }
 
-                setRequest(newRequest);
+                const newClient = [...newRequest].pop();
 
-                let {
-                  latitude,
-                  longitude,
-                  user: userData,
-                } = [...newRequest].pop();
+                setRequest(newRequest);
+                setClient(newClient);
+
+                let {latitude, longitude, user: userData} = newClient;
 
                 database()
                   .ref(`/request/${userData.id}`)
@@ -238,6 +240,13 @@ function Maps({navigation, user}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isMapReady, acceptDep]);
 
+  const initPositionDrag = () => {
+    positionDrag = {
+      latitude: state.region.latitude,
+      longitude: state.region.longitude,
+    };
+  };
+
   useEffect(() => {
     const callfonction = () => {
       //PROBLEME IL LANCE COMME MEME
@@ -255,6 +264,12 @@ function Maps({navigation, user}) {
             setDepanneurInLoading(false);
 
             setErrorModal(true);
+
+            setWaitDep(false);
+
+            setSelectPosition(false);
+
+            initPositionDrag();
 
             database().ref(`/request/${user.id}`).remove();
 
@@ -333,7 +348,7 @@ function Maps({navigation, user}) {
     setDepanneurInLoading(true);
     setAcceptDep(false);
 
-    let {latitude, longitude, user: userData} = [...request].pop();
+    let {latitude, longitude, user: userData} = client;
 
     const dataPosition = {
       dep: {
@@ -365,17 +380,15 @@ function Maps({navigation, user}) {
     // SI UPDATE REAL TIME ALR CHANGER VU USER
   };
 
-  const handleDeleteDep = () => {
+  const handleDeleteDep = dataId => {
     //REMOVE REQUEST
-    database().ref(`/request/${user.id}`).remove();
-
-    // STORAGE IN HISTORY ANNULER
-
-    // jE PUSH LES ELEEMNT EN HISTORY ET JE MES L4ID DANS UN ARRAY history DE L'USER
+    database().ref(`/request/${dataId}`).remove();
 
     setWaitDep(false);
     setDepanneurInLoading(false);
     setSelectPosition(false);
+    setPositionDepToReq({dep: {}, req: {}});
+    setRequest([]);
   };
 
   const saveIntervention = async () => {
@@ -385,26 +398,70 @@ function Maps({navigation, user}) {
       timestamp,
       user: userData,
       typeIntervention,
-    } = [...request].pop();
+    } = client;
 
-    const history = [
-      ...user.history,
-      {
-        date: new Date().getTime(),
-        intervention: {
-          latitude,
-          longitude,
-          timestamp,
-          user: userData,
-          typeIntervention,
-        },
+    // On  ajoute et ensuite on recuper l'id pour le foutre dans user.history
+    const dateToday = new Date().getTime();
+    const dateTodayClient = `client-${dateToday}`;
+    const dateTodayDep = `depanneur-${dateToday}`;
+
+    const history = {
+      date: dateToday,
+      latitude,
+      longitude,
+      timestamp,
+      client: userData.id,
+      typeIntervention,
+      type: user.type,
+      id: user.id,
+    };
+
+    const historyClient = {
+      date: dateToday,
+      latitude,
+      longitude,
+      timestamp,
+      depanneur: user.id,
+      typeIntervention,
+      type: userData.type,
+      id: userData.id,
+    };
+
+    await firestore().collection('history').doc(dateTodayDep).set(history);
+    await firestore()
+      .collection('history')
+      .doc(dateTodayClient)
+      .set(historyClient);
+
+    const historyClientTab = userData?.history
+      ? [...userData.history, dateTodayClient]
+      : [dateTodayClient];
+    const historyDepTab = user?.history
+      ? [...user.history, dateTodayDep]
+      : [dateTodayDep];
+
+    await firestore()
+      .collection('users')
+      .doc(userData.id)
+      .set({...userData, history: historyClientTab});
+    await firestore()
+      .collection('users')
+      .doc(user.id)
+      .set({...user, history: historyDepTab});
+
+    dispatch({
+      type: GET_USER,
+      payload: {
+        ...user,
+        history: user.history
+          ? [...user.history, historyDepTab]
+          : [historyDepTab],
       },
-    ];
+    });
 
-    await firestore().collection('users').doc(user.id).update(history);
-    await firestore().collection('users').doc(userData.id).update(history);
+    // AVERTIR CLIENT ET REINITIALISER => FIN
 
-    dispatch({type: GET_USER, payload: {...user, ...history}});
+    handleDeleteDep(userData.id);
   };
 
   const handlePositionValide = () => {
@@ -469,6 +526,10 @@ function Maps({navigation, user}) {
     positionDrag = e.nativeEvent.coordinate;
   };
 
+  const handleFinishDep = () => {
+    console.log('LEELLE handleFinishDep');
+  };
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -480,7 +541,6 @@ function Maps({navigation, user}) {
         ]}>
         <HeaderMaps navigation={navigation} />
       </Animated.View>
-
       <MapView
         provider={PROVIDER_GOOGLE}
         showsMyLocationButton={false}
@@ -499,24 +559,22 @@ function Maps({navigation, user}) {
         ]}
         ref={mapView => (map = mapView)}
         initialRegion={state.region}>
-        {/* {state.isMapReady &&
-          !selectPosition &&
+        {state.isMapReady &&
           state.position &&
-          user?.type === TYPE_USER &&
-          depanneur.map((e, i) => (
+          selectPosition &&
+          positionDepToReq?.dep?.latitude && (
             <DepanneMarker
-              key={i}
               source={require('../../assets/icons/Online.png')}
               driver={{
                 coordinate: {
-                  latitude: e.latitude,
-                  longitude: e.longitude,
+                  latitude: positionDepToReq.dep.latitude,
+                  longitude: positionDepToReq.dep.longitude,
                   latitudeDelta: 0.045,
                   longitudeDelta: 0.045,
                 },
               }}
             />
-          ))} */}
+          )}
 
         {state.isMapReady &&
           !selectPosition &&
@@ -526,7 +584,7 @@ function Maps({navigation, user}) {
           request.map((e, i) => (
             <DepanneMarker
               key={i}
-              callBack={() => {}}
+              callBack={() => setIsVisible(true)}
               source={require('../../assets/icons/Depannage.png')}
               driver={{
                 coordinate: {
@@ -642,22 +700,38 @@ function Maps({navigation, user}) {
         />
       )}
       {routeDepToReq && (
-        <View style={styles.button}>
-          <ButtonDefault
-            handleSend={() => {
-              setModalCertificaVisible(!modalCertificaVisible);
-            }}
-            title={'Certifié le dépannage'}
-          />
-        </View>
+        <>
+          <View style={styles.button}>
+            <View style={styles.containerButtonAnnul}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.buttonOulined}
+                onPress={() => setIsVisible(true)}>
+                <Text
+                  style={{
+                    color: Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: '700',
+                  }}>
+                  Ouvrir Google maps / Waze
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <ButtonDefault
+              handleSend={() => {
+                setModalCertificaVisible(!modalCertificaVisible);
+              }}
+              title={'Certifié le dépannage'}
+            />
+          </View>
+        </>
       )}
       <ModalDefault
         title="DÉPANNAGE CERTIFIÉ !"
-        text={`A cet adresse: ${adresseDep}`}
+        text={`Votre client ${client?.user?.userName} à était avertis, merci`}
         callBack={open => {
           setRouteDepToReq(false);
           setModalCertificaVisible(false);
-
           saveIntervention();
         }}
         modal={modalCertificaVisible}
@@ -778,7 +852,7 @@ function Maps({navigation, user}) {
         text="L'annulation est définitive"
         callBack={ask => {
           if (ask) {
-            handleDeleteDep();
+            handleDeleteDep(user);
           }
           setModalAsk(false);
         }}
@@ -816,7 +890,6 @@ function Maps({navigation, user}) {
           </View>
         </View>
       </Modal>
-
       <Modal animationType="none" transparent={true} visible={errorModal}>
         <View style={styles.topView}>
           <View style={styles.modalLoading}>
@@ -826,7 +899,6 @@ function Maps({navigation, user}) {
           </View>
         </View>
       </Modal>
-
       <ModalDefault
         title="CONFIRMER LE DÉPANNAGE"
         text={`A cet adresse: ${adresseDep}`}

@@ -78,7 +78,7 @@ function Maps({navigation, user}) {
 
   const [modalAsk, setModalAsk] = useState(false);
 
-  const [problem, setProblem] = useState(null);
+  const [problem, setProblem] = useState(5);
 
   const [errorModal, setErrorModal] = useState(false);
 
@@ -93,6 +93,8 @@ function Maps({navigation, user}) {
   const [positionDepToReq, setPositionDepToReq] = useState({dep: {}, req: {}});
 
   const [client, setClient] = useState(null);
+
+  const [endDemandClient, setEndDemandClient] = useState(false);
 
   let map;
   let deleteAsync = false;
@@ -118,13 +120,40 @@ function Maps({navigation, user}) {
                 const dataRequest = data.val();
                 console.log('INIT dataRequest', dataRequest);
 
+                if (!dataRequest) {
+                  return null;
+                }
+
                 // Ca depend si il est TRUE OU FALSE
 
-                // if (dataRequest && key !== 'inLoading') {
-                //   setModalSearchDep(true);
-                //   setDepanneurInLoading(true);
-                //   handlePositionRechercheDepart();
-                // }
+                if (!dataRequest.inLoading) {
+                  setModalSearchDep(true);
+                  setDepanneurInLoading(true);
+                  handlePositionRechercheDepart();
+                } else if (dataRequest.inLoading) {
+                  initPositionDragAlreadyExist({
+                    latitude: dataRequest.latitude,
+                    longitude: dataRequest.longitude,
+                  });
+
+                  const region = {
+                    latitude: dataRequest.latitude,
+                    longitude: dataRequest.longitude,
+                    latitudeDelta: 0.045,
+                    longitudeDelta: 0.045,
+                  };
+
+                  setState({
+                    region,
+                    position: state.position,
+                    isMapReady: state.isMapReady,
+                  });
+                  setDepanneurInLoading(true);
+                  setModalSearchDep(false);
+                  setPositionDepToReq(dataRequest.positionDep);
+                  setSelectPosition(true);
+                  setWaitDep(true);
+                }
               },
               errorObject => {
                 console.log('The read failed: ' + errorObject.name);
@@ -151,8 +180,8 @@ function Maps({navigation, user}) {
 
                     if (dataChange?.inLoading) {
                       setModalSearchDep(false);
-                      setDepanneurInLoading(false);
                       setPositionDepToReq(dataChange.positionDep);
+                      setClient(dataChange);
                     }
                   });
               }
@@ -168,13 +197,68 @@ function Maps({navigation, user}) {
         if (user?.type === TYPE_DEP) {
           ///////VERIFIER SI TU AJOUTE UNE REQUETE AVANT DE L4OUVIRE SI ON LE LANCE BIEN
 
+          ////////////////////// SI DEP QUITTE ET REVIEN
+
+          database()
+            .ref('/request')
+            .once('value', snapshot => {
+              const dataGet = snapshot.val();
+              if (!dataGet) {
+                return null;
+              }
+              let responselist = Object.values(dataGet).filter(
+                e => e?.depanneur === user.id,
+              );
+
+              if (responselist.length === 0) {
+                return null;
+              }
+
+              const data = responselist[0];
+
+              setPositionDepToReq(data.positionDep);
+              setRouteDepToReq(true);
+              setIsVisible(true);
+              setRequest(responselist);
+
+              database()
+                .ref(`/request/${data.id}`)
+                .once('child_removed', (e, key) => {
+                  console.log(
+                    '************************** LE CLIENT A DELETE DONC FAUT REINITIALISER AVEC UNE POP UP EXPLICATIVE  child_removed ************',
+                    e.val(),
+                  );
+                  setAcceptDep(false);
+                  setAdresseDep('');
+                  setEndDemandClient(true);
+                  setTimeout(() => {
+                    setEndDemandClient(false);
+                  }, 5000);
+
+                  setAcceptDep(false);
+                  setAdresseDep('');
+                  setDepanneurInLoading(false);
+                  setPositionDepToReq({dep: {}, req: {}});
+                  setRequest([]);
+                  setClient(null);
+                  setRouteDepToReq(false);
+                });
+            });
+
+          /////////////////////////
+
           const onChildAdd = database()
             .ref('/request')
             .limitToLast(10)
             .on('child_added', data => {
               console.log('GET REQUEST');
               if (!acceptDep) {
-                let newRequest = [data.val()].filter(e => !e.inLoading);
+                const dataGet = data.val();
+
+                if (!dataGet) {
+                  return null;
+                }
+                let newRequest = [dataGet].filter(e => !e.inLoading);
                 console.log('GET REQUEST', newRequest);
                 if (newRequest.length === 0) {
                   return;
@@ -193,10 +277,19 @@ function Maps({navigation, user}) {
                     console.log(
                       '************************** DEPANNEUR  child_removed ************',
                       e.val(),
-                      key,
                     );
                     setAcceptDep(false);
                     setAdresseDep('');
+                    setDepanneurInLoading(false);
+                    setPositionDepToReq({dep: {}, req: {}});
+                    setRequest([]);
+                    setClient(null);
+                    setRouteDepToReq(false);
+
+                    setEndDemandClient(true);
+                    setTimeout(() => {
+                      setEndDemandClient(false);
+                    }, 5000);
                   });
 
                 // if (state.isMapReady) {
@@ -247,10 +340,13 @@ function Maps({navigation, user}) {
     };
   };
 
+  const initPositionDragAlreadyExist = positionDep => {
+    positionDrag = positionDep;
+  };
+
   useEffect(() => {
     const callfonction = () => {
       //PROBLEME IL LANCE COMME MEME
-
       //CALL API
 
       database()
@@ -366,6 +462,7 @@ function Maps({navigation, user}) {
       .update({
         inLoading: true,
         positionDep: dataPosition,
+        depanneur: user.id,
       })
       .then(() => {
         setPositionDepToReq(dataPosition);
@@ -380,9 +477,79 @@ function Maps({navigation, user}) {
     // SI UPDATE REAL TIME ALR CHANGER VU USER
   };
 
-  const handleDeleteDep = dataId => {
+  const handleDeleteDep = async (dataId, withoutFinish = false) => {
     //REMOVE REQUEST
-    database().ref(`/request/${dataId}`).remove();
+
+    // SAVE IN HISTORY IF DELETE WITHOUT FINISH
+
+    if (withoutFinish) {
+      const dateToday = new Date().getTime();
+      const dateTodayClient = `client-${dateToday}`;
+      const dateTodayDep = `depanneur-${dateToday}`;
+
+      let {typeIntervention, depanneur} = client;
+
+      const history = {
+        date: dateToday,
+        client: user.id,
+        typeIntervention,
+        depanneur,
+        type: user.type,
+        id: user.id,
+        status: 'ANNULER',
+      };
+
+      const historyDep = {
+        date: dateToday,
+        client: user.id,
+        typeIntervention,
+        type: 'DEP',
+        id: depanneur,
+        status: 'ANNULER',
+      };
+
+      await firestore().collection('history').doc(dateTodayClient).set(history);
+      await firestore().collection('history').doc(dateTodayDep).set(historyDep);
+
+      const dataGet = firestore().collection('users').doc(depanneur);
+
+      const doc = await dataGet.get();
+
+      if (!doc.exists) {
+        console.log('No such document!');
+        return null;
+      }
+
+      const userData = doc.data();
+
+      const historyClientTab = user?.history
+        ? [...user.history, dateTodayClient]
+        : [dateTodayClient];
+      const historyDepTab = userData?.history
+        ? [...userData.history, dateTodayDep]
+        : [dateTodayDep];
+
+      await firestore()
+        .collection('users')
+        .doc(user.id)
+        .set({...userData, history: historyClientTab});
+      await firestore()
+        .collection('users')
+        .doc(userData.id)
+        .set({...user, history: historyDepTab});
+
+      database().ref(`/request/${dataId}`).remove();
+
+      dispatch({
+        type: GET_USER,
+        payload: {
+          ...user,
+          history: user.history
+            ? [...user.history, historyDepTab]
+            : [historyDepTab],
+        },
+      });
+    }
 
     setWaitDep(false);
     setDepanneurInLoading(false);
@@ -466,9 +633,6 @@ function Maps({navigation, user}) {
 
   const handlePositionValide = () => {
     //LANCEMENT DE LA REQUETE POUR AVOIR UN DEPANNEUR
-
-    // eviter de passer history
-
     database()
       .ref(`/request/${user.id}`)
       .set({
@@ -479,6 +643,7 @@ function Maps({navigation, user}) {
         user,
       })
       .then(() => {
+        setDepanneurInLoading(true);
         handlePositionRechercheDepart();
       })
       .catch(err => {
@@ -487,7 +652,6 @@ function Maps({navigation, user}) {
   };
 
   const handlePositionRechercheDepart = () => {
-    console.log('REQUEST DEPANNEUR', modalSearchDep);
     setModalSearchDep(true);
     setWaitDep(true);
   };
@@ -852,7 +1016,7 @@ function Maps({navigation, user}) {
         text="L'annulation est définitive"
         callBack={ask => {
           if (ask) {
-            handleDeleteDep(user);
+            handleDeleteDep(user.id, true);
           }
           setModalAsk(false);
         }}
@@ -899,6 +1063,17 @@ function Maps({navigation, user}) {
           </View>
         </View>
       </Modal>
+
+      <Modal animationType="none" transparent={true} visible={endDemandClient}>
+        <View style={styles.topView}>
+          <View style={styles.modalLoading}>
+            <Text style={styles.textModalLoading}>
+              Veuillez nous escuser le client a mis fin a la demande.
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
       <ModalDefault
         title="CONFIRMER LE DÉPANNAGE"
         text={`A cet adresse: ${adresseDep}`}

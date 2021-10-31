@@ -46,7 +46,7 @@ function Login({navigation}) {
         visibilityTime: 4000,
         autoHide: true,
         topOffset: 30,
-        bottomOffset: 40,
+        bottomOffset: 120,
         onShow: () => {},
         onHide: () => {},
         onPress: () => {},
@@ -65,7 +65,7 @@ function Login({navigation}) {
         visibilityTime: 4000,
         autoHide: true,
         topOffset: 30,
-        bottomOffset: 40,
+        bottomOffset: 120,
         onShow: () => {},
         onHide: () => {},
         onPress: () => {},
@@ -100,6 +100,9 @@ function Login({navigation}) {
 
   return (
     <View style={styles.container}>
+      <View style={{zIndex: 9999}}>
+        <Toast ref={ref => Toast.setRef(ref)} />
+      </View>
       <ImageBackground
         source={require('../../assets/icons/Background.png')}
         resizeMode="stretch"

@@ -39,8 +39,6 @@ const Navigator = ({user}) => {
   }, []);
 
   async function onAuthStateChanged(user) {
-    console.log('********** USER ***********', user);
-
     if (user) {
       const dataGet = firestore().collection('users').doc(user.uid);
 

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 
 import {
@@ -11,14 +11,17 @@ import {
   Pressable,
 } from 'react-native';
 
+import Moment from 'moment';
 import auth from '@react-native-firebase/auth';
 
 import {connect, useDispatch} from 'react-redux';
 import Colors from '../../../constants/Colors';
 import {DELETE_USER} from '../../redux/type';
-import ModalDefault from '../../components/Modal/ModalDefault';
+// import ModalDefault from '../../components/Modal/ModalDefault';
 import ModalAsk from '../../components/Modal/ModalAsk';
 import {TYPE_DEP, TYPE_USER} from '../../locale';
+
+Moment.locale('fr');
 
 function Compte({navigation, user}) {
   const dispatch = useDispatch();
@@ -124,10 +127,32 @@ function Compte({navigation, user}) {
                           fontSize: 15,
                           color: Colors.black,
                         }}>
-                        Type d'abonnement
+                        Status d'abonnement
                       </Text>
                       <Text style={{marginTop: 2, color: Colors.grey}}>
-                        {user?.typeAbonnement ? user.typeAbonnement : ''}
+                        {user?.statusAbonnement ? user.statusAbonnement : ''}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: Colors.black,
+                        }}>
+                        Date de fin d'abonnement
+                      </Text>
+                      <Text style={{marginTop: 2, color: Colors.grey}}>
+                        {user?.dateEndAbonnement
+                          ? Moment(user.dateEndAbonnement).format('DD/MM/YYYY')
+                          : ''}
                       </Text>
                     </View>
                   </View>

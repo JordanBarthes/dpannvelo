@@ -1,202 +1,206 @@
-import React, {useState} from 'react';
-
-import {
-  StyleSheet,
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-} from 'react-native';
-
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, View, Image, Text, ScrollView} from 'react-native';
+import {connect} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 import Colors from '../../../constants/Colors';
 import ButtonDefault from '../../components/Button/ButtonDefault';
-import ModalDefault from '../../components/Modal/ModalDefault';
 
-function Abonnement({navigation}) {
-  const [choice, setChoice] = useState('1');
+const PaymentRequest = require('react-native-payments').PaymentRequest;
 
-  const [modal, setModal] = useState(false);
+// const METHOD_DATA = [{
+//   supportedMethods: ['apple-pay'],
+//   data: {
+//     merchantIdentifier: 'merchant.com.your-app.namespace',
+//     supportedNetworks: ['visa', 'mastercard', 'amex'],
+//     countryCode: 'US',
+//     currencyCode: 'USD'
+// paymentMethodTokenizationParameters: {
+//   				parameters: {
+//   					gateway: 'stripe',
+//   					'stripe:publishableKey': 'pk_test_asdfghjkl_qwertyuiop'
+//   				}
+//   			}
+//   }
+// }];
 
-  const handleSend = () => navigation.navigate('Buy');
+const METHOD_DATA = [
+  {
+    supportedMethods: ['android-pay'],
+    data: {
+      supportedNetworks: ['visa', 'mastercard', 'amex'],
+      currencyCode: 'USD',
+      environment: 'TEST', // defaults to production
+      paymentMethodTokenizationParameters: {
+        tokenizationType: 'NETWORK_TOKEN',
+        parameters: {
+          publicKey:
+            'BB0kMB9zQ6LMmW3OByUjQV3ZnYC4exd50a2tdd62lJN/CYNXyEz6Efuyvswfu2HEjR0cnHRYniR21fxaVmq1ra0=',
+        },
+      },
+    },
+  },
+];
 
-  const handleChoice = select => {
-    setChoice(select);
-    if (select === '2') {
-      setModal(true);
-    }
+const DETAILS = {
+  id: 'basic-example',
+  displayItems: [
+    {
+      label: 'Movie Ticket',
+      amount: {currency: 'USD', value: '15.00'},
+    },
+  ],
+  total: {
+    label: 'Merchant Name',
+    amount: {currency: 'USD', value: '15.00'},
+  },
+};
+
+// const paymentRequest = new PaymentRequest(METHOD_DATA, DETAILS);
+
+// paymentRequest.show().then(paymentResponse => {
+//   // Your payment processing code goes here
+
+// const { transactionIdentifier, paymentData } = paymentResponse.details;
+
+//ANDROID
+
+// const { getPaymentToken } = paymentResponse.details;
+
+// return getPaymentToken()
+//   .then(paymentToken => {
+//     const { ephemeralPublicKey, encryptedMessage, tag } = paymentResponse.details;
+
+//     return fetch('...', {
+//       method: 'POST',
+//       body: {
+//         ephemeralPublicKey,
+//         encryptedMessage,
+//         tag
+//       }
+//     })
+//     .then(res => res.json())
+//     .then(successHandler)
+//     .catch(errorHandler)
+//   });
+
+//   return processPayment(paymentResponse);
+// });
+
+// paymentRequest.abort();
+
+function Abonnement({navigation, user}) {
+  const [choice, setChoice] = useState(user.abonnement);
+  const [abbonnement, setAbbonnement] = useState([]);
+
+  useEffect(() => {
+    const getAbonnement = async () => {
+      const snapshot = await firestore().collection('abonnement').get();
+      const data = snapshot.docs.map(doc => doc.data());
+
+      if (data.length === 0) {
+        console.log('No such document!');
+        return null;
+      }
+      setAbbonnement(data);
+    };
+    getAbonnement();
+    console.log('***** USER ****** ', user);
+  }, []);
+
+  //fonction caclul date end
+
+  const handleSend = () => {
+    console.log('CALL PAYEMENT');
   };
+
+  const dateToday = new Date().getTime();
+  const handleChoice = select => {};
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={styles.content}>
-          <View style={styles.padding}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-              }}>
+        {abbonnement.map((e, i) => (
+          <View key={i} style={styles.content}>
+            <View style={styles.padding}>
               <View
                 style={{
-                  paddingTop: 10,
-                  marginRight: 15,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
                 }}>
-                <Image
-                  style={{width: 24, height: 24, resizeMode: 'contain'}}
-                  source={require('../../assets/icons/abonnement1.png')}
-                />
-              </View>
-              <View style={{justifyContent: 'center'}}>
-                <Text
+                <View
                   style={{
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: '700',
+                    paddingTop: 10,
+                    marginRight: 15,
                   }}>
-                  Annuel
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 2,
-                    color: Colors.green,
-                    fontWeight: '700',
-                  }}>
-                  70€/an
-                </Text>
+                  <Image
+                    style={{width: 24, height: 24, resizeMode: 'contain'}}
+                    source={require('../../assets/icons/abonnement1.png')}
+                  />
+                </View>
+                <View style={{justifyContent: 'center'}}>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: Colors.black,
+                      fontWeight: '700',
+                    }}>
+                    {e?.name ?? ''}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      color: Colors.green,
+                      fontWeight: '700',
+                    }}>
+                    {e?.displayPrice ?? ''}
+                  </Text>
+                </View>
               </View>
+              <Text style={{marginTop: 2, color: Colors.grey}}>
+                {e?.line1 ?? ''}
+              </Text>
+              <Text style={{marginTop: 2, color: Colors.grey}}>
+                {e?.line2 ?? ''}
+              </Text>
             </View>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              Deux dépannages complets*
-            </Text>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              Révision à la date anniversaire
-            </Text>
+            <ButtonDefault
+              title={
+                user.abonnementId === 0
+                  ? 'Choisir'
+                  : e.id === user.abonnementId
+                  ? 'Actif'
+                  : 'Non Actif'
+              }
+              disable={
+                user.abonnementId === 0 ? false : e.id !== user.abonnementId
+              }
+              handleSend={() => handleChoice(e.id)}
+            />
           </View>
-          <ButtonDefault
-            title="Actif"
-            disable
-            handleSend={() => handleChoice('1')}
-          />
+        ))}
+        <View style={{marginLeft: 20, marginBottom: 30}}>
+          <Text style={{marginTop: -12, color: Colors.grey}}>
+            * déplacement, petite pièce et main d'œuvre
+          </Text>
         </View>
-        <View style={styles.content}>
-          <View style={styles.padding}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-              }}>
-              <View
-                style={{
-                  paddingTop: 10,
-                  marginRight: 15,
-                }}>
-                <Image
-                  style={{width: 24, height: 24, resizeMode: 'contain'}}
-                  source={require('../../assets/icons/abonnement1.png')}
-                />
-              </View>
-              <View style={{justifyContent: 'center'}}>
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: '700',
-                  }}>
-                  Semestriel
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 2,
-                    color: Colors.green,
-                    fontWeight: '700',
-                  }}>
-                  40€/semestre
-                </Text>
-              </View>
-            </View>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              Un dépannage complet*
-            </Text>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              Check Sécurité à la date anniversaire
-            </Text>
-          </View>
-          <ButtonDefault
-            title="Actif"
-            disable
-            handleSend={() => handleChoice('1')}
-          />
-        </View>
-        <View style={styles.content}>
-          <View style={styles.padding}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-              }}>
-              <View
-                style={{
-                  paddingTop: 10,
-                  marginRight: 15,
-                }}>
-                <Image
-                  style={{width: 24, height: 24, resizeMode: 'contain'}}
-                  source={require('../../assets/icons/abonnement1.png')}
-                />
-              </View>
-              <View style={{justifyContent: 'center'}}>
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: '700',
-                  }}>
-                  Mensuel
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 2,
-                    color: Colors.green,
-                    fontWeight: '700',
-                  }}>
-                  21€/mois
-                </Text>
-              </View>
-            </View>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              Un dépannage complet*
-            </Text>
-            <Text style={{marginTop: 2, color: Colors.grey}}>
-              chaque dépannage lance un nouveau contrat
-            </Text>
-          </View>
-          <ButtonDefault title="Choisir" handleSend={() => handleChoice('2')} />
-        </View>
-        <Text style={{marginTop: -12, color: Colors.grey}}>
-          * déplacement, petite pièce et main d'œuvre
-        </Text>
       </ScrollView>
-      <ModalDefault
-        title="Confirmer de dépannages"
-        text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor"
-        callBack={open => setModal(open)}
-        modal={modal}
-      />
     </View>
   );
 }
 
-export default Abonnement;
+const mapStateToProps = (state, props) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(Abonnement);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.default,
-    padding: 30,
-    paddingTop: 50,
+    paddingTop: 20,
   },
   padding: {
     padding: 20,
@@ -210,6 +214,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     paddingBottom: 20,
+    marginHorizontal: 20,
   },
   buttonContain: {
     padding: 8,

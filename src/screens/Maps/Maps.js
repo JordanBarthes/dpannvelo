@@ -15,7 +15,15 @@ import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import {Popup} from 'react-native-map-link';
 
-import {TYPE_DEP, TYPE_USER} from '../../locale';
+import {
+  TYPE_DEP,
+  TYPE_USER,
+  FREINS,
+  PNEUS,
+  VITESSES,
+  ACCESSOIRE,
+  AUTRE,
+} from '../../locale';
 
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -588,7 +596,7 @@ function Maps({navigation, user}) {
       latitude,
       longitude,
       timestamp,
-      depanneur: user.id,
+      client: user.id,
       typeIntervention,
       type: userData.type,
       id: userData.id,
@@ -962,40 +970,40 @@ function Maps({navigation, user}) {
             <View style={styles.buttonOption}>
               <ButtonDefault
                 buttonOulined
-                active={problem === 1}
-                handleSend={() => setProblem(1)}
+                active={problem === FREINS}
+                handleSend={() => setProblem(FREINS)}
                 title="Freins"
               />
             </View>
             <View style={styles.buttonOption}>
               <ButtonDefault
                 buttonOulined
-                active={problem === 2}
-                handleSend={() => setProblem(2)}
+                active={problem === PNEUS}
+                handleSend={() => setProblem(PNEUS)}
                 title="Pneus"
               />
             </View>
             <View style={styles.buttonOption}>
               <ButtonDefault
                 buttonOulined
-                active={problem === 3}
-                handleSend={() => setProblem(3)}
+                active={problem === VITESSES}
+                handleSend={() => setProblem(VITESSES)}
                 title="Vitesses"
               />
             </View>
             <View style={styles.buttonOption}>
               <ButtonDefault
                 buttonOulined
-                active={problem === 4}
-                handleSend={() => setProblem(4)}
+                active={problem === ACCESSOIRE}
+                handleSend={() => setProblem(ACCESSOIRE)}
                 title="Montage d’accessoires"
               />
             </View>
             <View style={styles.buttonOption}>
               <ButtonDefault
                 buttonOulined
-                active={problem === 5}
-                handleSend={() => setProblem(5)}
+                active={problem === AUTRE}
+                handleSend={() => setProblem(AUTRE)}
                 title="Autres"
               />
             </View>
